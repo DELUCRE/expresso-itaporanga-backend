@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel - Gestão Logística</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #343a40; padding: 10px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { margin: 0; font-size: 1.5em; }
+        .navbar .user-info { font-size: 0.9em; }
+        .navbar button { background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }
+        .navbar button:hover { background-color: #c82333; }
+        .container { padding: 20px; }
+        .section { background-color: #fff; padding: 20px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+        th { background-color: #e9ecef; color: #495057; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .actions button { padding: 5px 10px; margin-right: 5px; cursor: pointer; border-radius: 4px; border: 1px solid transparent; }
+        .view-btn { background-color: #007bff; color: white; border-color: #007bff; }
+        .view-btn:hover { background-color: #0056b3; }
+        .status-form { margin-top: 10px; }
+        .status-form select, .status-form input, .status-form button { padding: 8px; margin-right: 5px; border-radius: 4px; border: 1px solid #ced4da; }
+        .status-form button { background-color: #28a745; color: white; border-color: #28a745; cursor: pointer; }
+        .status-form button:hover { background-color: #218838; }
+        #add-delivery-btn { background-color: #17a2b8; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 1em; margin-bottom: 20px; }
+        #add-delivery-btn:hover { background-color: #138496; }
+        .modal { display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); }
+        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 600px; border-radius: 8px; }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; }
+        #delivery-details p { margin: 5px 0; }
+        #delivery-details strong { display: inline-block; width: 120px; }
+        #status-history { margin-top: 15px; }
+        #status-history h4 { margin-bottom: 5px; }
+        #status-history ul { list-style: none; padding: 0; }
+        #status-history li { background-color: #f1f1f1; margin-bottom: 5px; padding: 8px; border-radius: 4px; font-size: 0.9em; }
+        .message { margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center; display: none; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1>Gestão Logística</h1>
+        <div class="user-info">
+            <span id="username-display"></span> (<span id="perfil-display"></span>)
+            <button onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="message-area" class="message"></div>
+
+        <!-- Botão para adicionar entrega (visível para admin/operador) -->
+        <button id="add-delivery-btn" style="display: none;" onclick="window.location.href=\'/cadastro.html\'">Adicionar Nova Entrega</button>
+
+        <!-- Seção de Entregas -->
+        <div class="section">
+            <h2>Entregas Atuais</h2>
+            <table id="entregas-table">
+                <thead>
+                    <tr>
+                        <th>Cód. Rastreio</th>
+                        <th>Remetente</th>
+                        <th>Destinatário</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Status Atual</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas da tabela serão preenchidas via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal para Detalhes da Entrega -->
+    <div id="delivery-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2>Detalhes da Entrega</h2>
+            <div id="delivery-details">
+                <!-- Detalhes preenchidos via JS -->
+            </div>
+            <div id="status-history">
+                <h4>Histórico de Status</h4>
+                <ul id="history-list">
+                    <!-- Histórico preenchido via JS -->
+                </ul>
+            </div>
+            <!-- Formulário para Atualizar Status (visível para admin/operador) -->
+            <div id="update-status-section" style="display: none;">
+                <h4>Atualizar Status</h4>
+                <form id="status-update-form" class="status-form">
+                    <input type="hidden" id="update-codigo-rastreio">
+                    <select id="new-status" required>
+                        <option value="Em trânsito">Em trânsito</option>
+                        <option value="Saiu para entrega">Saiu para entrega</option>
+                        <option value="Entregue">Entregue</option>
+                        <option value="Problema na entrega">Problema na entrega</option>
+                        <option value="Aguardando retirada">Aguardando retirada</option>
+                        <option value="Devolvido">Devolvido</option>
+                    </select>
+                    <input type="text" id="new-location" placeholder="Localização (opcional)">
+                    <input type="text" id="new-observations" placeholder="Observações (opcional)">
+                    <button type="submit">Atualizar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const usernameDisplay = document.getElementById(\'username-display\');
+        const perfilDisplay = document.getElementById(\'perfil-display\');
+        const entregasTableBody = document.querySelector(\'#entregas-table tbody\');
+        const addDeliveryBtn = document.getElementById(\'add-delivery-btn\');
+        const modal = document.getElementById(\'delivery-modal\');
+        const deliveryDetailsDiv = document.getElementById(\'delivery-details\');
+        const historyList = document.getElementById(\'history-list\');
+        const updateStatusSection = document.getElementById(\'update-status-section\');
+        const statusUpdateForm = document.getElementById(\'status-update-form\');
+        const messageArea = document.getElementById(\'message-area\');
+
+        let currentUser = null;
+
+        // Função para mostrar mensagens
+        function showMessage(text, type = \'success\') {
+            messageArea.textContent = text;
+            messageArea.className = `message ${type}`;
+            messageArea.style.display = \'block\';
+            setTimeout(() => { messageArea.style.display = \'none\'; }, 5000); // Esconde após 5 segundos
+        }
+
+        // Função para buscar dados do usuário e entregas
+        async function initializeDashboard() {
+            // 1. Verificar status do login
+            try {
+                const statusResponse = await fetch(\'/auth/status\');
+                const statusData = await statusResponse.json();
+
+                if (!statusData.logged_in) {
+                    window.location.href = \'/login.html\'; // Redireciona se não estiver logado
+                    return;
+                }
+                currentUser = statusData.user;
+                usernameDisplay.textContent = currentUser.username;
+                perfilDisplay.textContent = currentUser.perfil;
+
+                // Mostrar botão de adicionar entrega para admin/operador
+                if (currentUser.perfil === \'admin\' || currentUser.perfil === \'operador\') {
+                    addDeliveryBtn.style.display = \'block\';
+                    updateStatusSection.style.display = \'block\'; // Mostrar seção de update no modal
+                }
+
+                // 2. Buscar lista de entregas
+                fetchEntregas();
+
+            } catch (error) {
+                console.error(\'Erro ao inicializar dashboard:\', error);
+                showMessage(\'Erro ao carregar dados. Tente recarregar a página.\', \'error\');
+                // Poderia redirecionar para login em caso de erro de autenticação
+                // window.location.href = \'/login.html\';
+            }
+        }
+
+        // Função para buscar e exibir entregas
+        async function fetchEntregas() {
+            try {
+                const response = await fetch(\'/api/entregas\');
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                const entregas = await response.json();
+                displayEntregas(entregas);
+            } catch (error) {
+                console.error(\'Erro ao buscar entregas:\', error);
+                showMessage(`Erro ao buscar entregas: ${error.message}`, \'error\');
+            }
+        }
+
+        // Função para exibir entregas na tabela
+        function displayEntregas(entregas) {
+            entregasTableBody.innerHTML = \'\'; // Limpa tabela
+            if (entregas.length === 0) {
+                entregasTableBody.innerHTML = \'<tr><td colspan="7" style="text-align:center;">Nenhuma entrega encontrada.</td></tr>\';
+                return;
+            }
+            entregas.forEach(entrega => {
+                const row = document.createElement(\'tr\');
+                row.innerHTML = `
+                    <td>${entrega.codigo_rastreio}</td>
+                    <td>${entrega.remetente}</td>
+                    <td>${entrega.destinatario}</td>
+                    <td>${entrega.origem}</td>
+                    <td>${entrega.destino}</td>
+                    <td>${entrega.status}</td>
+                    <td class="actions">
+                        <button class="view-btn" onclick="openModal(\'${entrega.codigo_rastreio}\')">Ver Detalhes</button>
+                    </td>
+                `;
+                entregasTableBody.appendChild(row);
+            });
+        }
+
+        // Função para abrir o modal com detalhes
+        async function openModal(codigoRastreio) {
+            try {
+                const response = await fetch(`/api/entregas/${codigoRastreio}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                const entrega = await response.json();
+
+                // Preenche detalhes
+                deliveryDetailsDiv.innerHTML = `
+                    <p><strong>Cód. Rastreio:</strong> ${entrega.codigo_rastreio}</p>
+                    <p><strong>Remetente:</strong> ${entrega.remetente}</p>
+                    <p><strong>Destinatário:</strong> ${entrega.destinatario}</p>
+                    <p><strong>Origem:</strong> ${entrega.origem}</p>
+                    <p><strong>Destino:</strong> ${entrega.destino}</p>
+                    <p><strong>Status Atual:</strong> ${entrega.status}</p>
+                    <p><strong>Data Criação:</strong> ${new Date(entrega.data_criacao).toLocaleString(\'pt-BR\')}</p>
+                    <p><strong>Última Atualização:</strong> ${new Date(entrega.data_atualizacao).toLocaleString(\'pt-BR\')}</p>
+                `;
+
+                // Preenche histórico
+                historyList.innerHTML = \'\';
+                if (entrega.historico_status && entrega.historico_status.length > 0) {
+                    entrega.historico_status.forEach(hist => {
+                        const li = document.createElement(\'li\');
+                        li.textContent = `[${new Date(hist.timestamp).toLocaleString(\'pt-BR\')}] ${hist.status}${hist.localizacao ? \' - Local: \' + hist.localizacao : \'\'}${hist.observacoes ? \' (Obs: \' + hist.observacoes + \')\' : \'\'}`;
+                        historyList.appendChild(li);
+                    });
+                } else {
+                    historyList.innerHTML = \'<li>Nenhum histórico disponível.</li>\';
+                }
+
+                // Prepara formulário de atualização
+                document.getElementById(\'update-codigo-rastreio\').value = codigoRastreio;
+                document.getElementById(\'new-status\').value = entrega.status; // Pre-seleciona status atual
+                document.getElementById(\'new-location\').value = \'\';
+                document.getElementById(\'new-observations\').value = \'\';
+
+                modal.style.display = \'block\';
+            } catch (error) {
+                console.error(\'Erro ao buscar detalhes da entrega:\', error);
+                showMessage(`Erro ao buscar detalhes: ${error.message}`, \'error\');
+            }
+        }
+
+        // Função para fechar o modal
+        function closeModal() {
+            modal.style.display = \'none\';
+        }
+
+        // Fecha o modal se clicar fora dele
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Função de logout
+        async function logout() {
+            try {
+                const response = await fetch(\'/auth/logout\', { method: \'POST\' });
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                currentUser = null;
+                window.location.href = \'/login.html\'; // Redireciona para login
+            } catch (error) {
+                console.error(\'Erro ao fazer logout:\', error);
+                showMessage(`Erro ao sair: ${error.message}`, \'error\');
+            }
+        }
+
+        // Event listener para atualizar status
+        statusUpdateForm.addEventListener(\'submit\', async (event) => {
+            event.preventDefault();
+            const codigoRastreio = document.getElementById(\'update-codigo-rastreio\').value;
+            const status = document.getElementById(\'new-status\').value;
+            const localizacao = document.getElementById(\'new-location\').value;
+            const observacoes = document.getElementById(\'new-observations\').value;
+
+            try {
+                const response = await fetch(`/api/entregas/${codigoRastreio}/status`, {
+                    method: \'PUT\',
+                    headers: { \'Content-Type\': \'application/json\' },
+                    body: JSON.stringify({ status, localizacao, observacoes })
+                });
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || `Erro ${response.status}`);
+                }
+                showMessage(\'Status atualizado com sucesso!\');
+                closeModal();
+                fetchEntregas(); // Atualiza a lista de entregas
+            } catch (error) {
+                console.error(\'Erro ao atualizar status:\', error);
+                showMessage(`Erro ao atualizar status: ${error.message}`, \'error\');
+            }
+        });
+
+        // Inicializa o dashboard ao carregar a página
+        document.addEventListener(\'DOMContentLoaded\', initializeDashboard);
+
+    </script>
+
+</body>
+</html>
+

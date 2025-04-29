@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Gestão Logística</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background-color: #f4f4f4; display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+        .login-container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 300px; }
+        h1 { text-align: center; color: #333; margin-bottom: 20px; }
+        label { display: block; margin-bottom: 5px; color: #555; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        .message { margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="login-form">
+            <div>
+                <label for="username">Usuário:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Entrar</button>
+        </form>
+        <div id="message-area" class="message" style="display: none;"></div>
+        <!-- Link para registro (opcional) -->
+        <!-- <p style="text-align: center; margin-top: 15px;">Não tem conta? <a href="/register.html">Registre-se</a></p> -->
+    </div>
+
+    <script>
+        const loginForm = document.getElementById('login-form');
+        const messageArea = document.getElementById('message-area');
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            messageArea.style.display = 'none';
+            messageArea.className = 'message'; // Reset class
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Erro ${response.status}`);
+                }
+
+                // Login bem-sucedido
+                messageArea.textContent = 'Login realizado com sucesso! Redirecionando...';
+                messageArea.classList.add('success');
+                messageArea.style.display = 'block';
+                // Redireciona para a página principal após um pequeno atraso
+                setTimeout(() => {
+                    window.location.href = '/index.html'; // Ou a página principal desejada
+                }, 1500);
+
+            } catch (error) {
+                messageArea.textContent = `Erro no login: ${error.message}`;
+                messageArea.classList.add('error');
+                messageArea.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
+
