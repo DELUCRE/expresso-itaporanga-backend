@@ -1,30 +1,39 @@
-from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, jsonify, request
+from src.models.models import Usuario, db
 
-db = SQLAlchemy()
+user_bp = Blueprint('user', __name__)
 
-class Usuario(db.Model): # Renomeado para Usuario para corresponder ao schema
-    __tablename__ = 'usuarios' # Especifica o nome da tabela
+@user_bp.route('/users', methods=['GET'])
+def get_users():
+    users = Usuario.query.all()
+    return jsonify([user.to_dict() for user in users])
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(80), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
-    perfil = db.Column(db.String(50), nullable=False, default='operador')
+@user_bp.route('/users', methods=['POST'])
+def create_user():
+    
+    data = request.json
+    user = Usuario(username=data["username"], email=data["email"]) # Use Usuario
+    db.session.add(user)
+    db.session.commit()
+    return jsonify(user.to_dict()), 201
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+@user_bp.route('/users/<int:user_id>', methods=['GET'])
+def get_user(user_id):
+    user = Usuario.query.get_or_404(user_id) # Use Usuario
+    return jsonify(user.to_dict())
 
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+@user_bp.route('/users/<int:user_id>', methods=['PUT'])
+def update_user(user_id):
+    user = Usuario.query.get_or_404(user_id) # Use Usuario
+    data = request.json
+    user.username = data.get("username", user.username)
+    user.email = data.get("email", user.email)
+    db.session.commit()
+    return jsonify(user.to_dict())
 
-    def __repr__(self):
-        return f'<Usuario {self.username}>'
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'perfil': self.perfil
-            # Não retornar password_hash
-        }
-
+@user_bp.route('/users/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    user = Usuario.query.get_or_404(user_id) # Use Usuario
+    db.session.delete(user)
+    db.session.commit()
+    return '', 204
