@@ -432,5 +432,13 @@ def gerar_relatorio_excel():
         app.logger.error(f"Erro ao gerar relatório Excel: {str(e)}")
         return jsonify({"error": f"Erro ao gerar relatório Excel: {str(e)}"}), 500
 
+@app.route('/init-db', methods=['GET'])
+def init_db():
+    try:
+        db.create_all()
+        return jsonify({"message": "Banco de dados inicializado com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
