@@ -1,10 +1,10 @@
 import os
 from datetime import datetime, timedelta
 from flask import Flask, send_from_directory, request, jsonify
-from src.models.models import db, Entrega, AtualizacaoStatus, Usuario
-from src.routes.user import user_bp
-from src.routes.auth import auth_bp
-from src.routes.entregas import entregas_bp
+from models.models import db, Entrega, AtualizacaoStatus, Usuario
+from routes.user import user_bp
+from routes.auth import auth_bp
+from routes.entregas import entregas_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT')
