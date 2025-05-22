@@ -1,4 +1,5 @@
 import os
+from flask_cors import CORS
 from datetime import datetime, timedelta
 from flask import Flask, send_from_directory, request, jsonify
 from models.models import db, Entrega, AtualizacaoStatus, Usuario
@@ -6,7 +7,7 @@ from routes.user import user_bp
 from routes.auth import auth_bp
 from routes.entregas import entregas_bp
 
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static')) CORS (app, supports_credentials=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT')
 app.register_blueprint(user_bp, url_prefix="/api")
 app.register_blueprint(auth_bp, url_prefix="/auth")
