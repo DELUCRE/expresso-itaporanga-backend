@@ -8,7 +8,7 @@ from routes.auth import auth_bp
 from routes.entregas import entregas_bp
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static')) 
-CORS (app, supports_credentials=True)
+CORS (app, resource={r"/*":{"origins":"*"}}, supports_credentials=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT')
 app.register_blueprint(user_bp, url_prefix="/api")
 app.register_blueprint(auth_bp, url_prefix="/auth")
