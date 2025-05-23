@@ -2,6 +2,15 @@ from flask import Blueprint, request, jsonify
 from models.models import db, Entrega, AtualizacaoStatus, Usuario
 from datetime import datetime
 from sqlalchemy import desc
+from fastapi import APIRouter
+from models.entrega import Entrega  # Certifique-se de que o modelo Entrega está definido corretamente
+
+router = APIRouter()
+
+@router.get("/entregas")
+async def listar_entregas():
+    # Lógica para obter as entregas do banco de dados
+    return {"entregas": [...]}
 
 entregas_bp = Blueprint('entregas', __name__)
 
