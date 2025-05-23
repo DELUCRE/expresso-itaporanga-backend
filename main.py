@@ -813,7 +813,7 @@ def create_sample_data():
                 entrega_id=entrega.id,
                 status="Pendente",
                 timestamp=entrega.data_criacao,
-                observacao="Entrega registrada no sistema"
+                observacoes="Entrega registrada no sistema"  # Corrigido para 'observacoes'
             ))
             
             # Segundo status: Em processamento (para todas exceto as que ainda estão pendentes)
@@ -822,7 +822,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Em processamento",
                     timestamp=entrega.data_criacao + timedelta(hours=2),
-                    observacao="Entrega em processamento no centro de distribuição"
+                    observacoes="Entrega em processamento no centro de distribuição"  # Corrigido para 'observacoes'
                 ))
             
             # Terceiro status: Em trânsito (para entregas que saíram para entrega)
@@ -831,7 +831,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Em trânsito",
                     timestamp=entrega.data_criacao + timedelta(hours=5),
-                    observacao="Entrega saiu para distribuição"
+                    observacoes="Entrega saiu para distribuição"  # Corrigido para 'observacoes'
                 ))
             
             # Status específicos baseados no status atual da entrega
@@ -840,7 +840,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Atrasado",
                     timestamp=entrega.data_prevista_entrega + timedelta(hours=1),
-                    observacao=f"Entrega atrasada: {entrega.motivo_atraso or 'Motivo não especificado'}"
+                    observacoes=f"Entrega atrasada: {entrega.motivo_atraso or 'Motivo não especificado'}"  # Corrigido para 'observacoes'
                 ))
             
             elif entrega.status == "Aguardando retirada":
@@ -848,7 +848,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Aguardando retirada",
                     timestamp=entrega.data_atualizacao,
-                    observacao="Entrega disponível para retirada no ponto de coleta"
+                    observacoes="Entrega disponível para retirada no ponto de coleta"  # Corrigido para 'observacoes'
                 ))
             
             elif entrega.status == "Problema na entrega":
@@ -856,7 +856,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Problema na entrega",
                     timestamp=entrega.data_atualizacao,
-                    observacao=f"Problema identificado: {entrega.motivo_atraso or 'Endereço incorreto'}"
+                    observacoes=f"Problema identificado: {entrega.motivo_atraso or 'Endereço incorreto'}"  # Corrigido para 'observacoes'
                 ))
             
             elif entrega.status == "Entregue":
@@ -864,7 +864,7 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Entregue",
                     timestamp=entrega.data_atualizacao,
-                    observacao="Entrega realizada com sucesso"
+                    observacoes="Entrega realizada com sucesso"  # Corrigido para 'observacoes'
                 ))
             
             elif entrega.status == "Devolvido":
@@ -872,14 +872,14 @@ def create_sample_data():
                     entrega_id=entrega.id,
                     status="Em trânsito para devolução",
                     timestamp=entrega.data_atualizacao - timedelta(days=2),
-                    observacao=f"Iniciando processo de devolução: {entrega.motivo_devolucao or 'Motivo não especificado'}"
+                    observacoes=f"Iniciando processo de devolução: {entrega.motivo_devolucao or 'Motivo não especificado'}"  # Corrigido para 'observacoes'
                 ))
                 
                 db.session.add(AtualizacaoStatus(
                     entrega_id=entrega.id,
                     status="Devolvido",
                     timestamp=entrega.data_atualizacao,
-                    observacao=f"Entrega devolvida ao remetente: {entrega.motivo_devolucao or 'Motivo não especificado'}"
+                    observacoes=f"Entrega devolvida ao remetente: {entrega.motivo_devolucao or 'Motivo não especificado'}"  # Corrigido para 'observacoes'
                 ))
         
         db.session.commit()
@@ -893,6 +893,6 @@ def create_sample_data():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
-
+        
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
