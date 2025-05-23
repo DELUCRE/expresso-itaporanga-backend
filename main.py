@@ -1023,6 +1023,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-        
-if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
+
+from flask import Flask, jsonify
+from routes.entregas import entregas_bp
+
+app = Flask(_name_)
+app.register_blueprint(entregas_bp)
+
+@app.route('/api/auth/status')
+def auth_status():
+    return jsonify({"status": "ok"})
+
+if _name_ == '_main_':
+    app.run(debug=True)
