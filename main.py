@@ -460,5 +460,158 @@ def create_admin():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/create-sample-data', methods=['GET'])
+def create_sample_data():
+    try:
+        # Verificar se já existem entregas
+        if Entrega.query.count() > 0:
+            return jsonify({"message": "Já existem entregas no banco de dados!"}), 200
+           
+        # Criar entregas de exemplo
+        entregas = [
+            Entrega(
+                codigo_rastreio="TRACK163630",
+                remetente="Distribuidora de Livros",
+                destinatario="Livraria",
+                origem="Porto Alegre, RS",
+                destino="Florianópolis, SC",
+                status="Pendente",
+                data_criacao=datetime.now() - timedelta(days=2),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() + timedelta(days=3),
+                tipo_produto="Livros",
+                peso=15.5,
+                km=476.2,
+                preco=350.00
+            ),
+            Entrega(
+                codigo_rastreio="ATR13359540",
+                remetente="Indústria Nacional",
+                destinatario="Loja de Departamentos",
+                origem="Curitiba, PR",
+                destino="Florianópolis, SC",
+                status="Atrasado",
+                data_criacao=datetime.now() - timedelta(days=5),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() - timedelta(days=2),
+                tipo_produto="Eletrônicos",
+                peso=78.9,
+                km=310.5,
+                preco=690.00,
+                motivo_atraso="Condições climáticas adversas"
+            ),
+            Entrega(
+                codigo_rastreio="DA1AB1EU",
+                remetente="Gráfica Nordeste",
+                destinatario="Universidade Federal do Ceará",
+                origem="Fortaleza",
+                destino="Fortaleza",
+                status="Aguardando retirada",
+                data_criacao=datetime.now() - timedelta(days=3),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() + timedelta(days=1),
+                tipo_produto="Material didático",
+                peso=45.2,
+                km=12.3,
+                preco=180.00
+            ),
+            Entrega(
+                codigo_rastreio="ATR70497128",
+                remetente="Empresa ABC Ltda",
+                destinatario="Mercado Central",
+                origem="São Paulo, SP",
+                destino="Rio de Janeiro, RJ",
+                status="Atrasado",
+                data_criacao=datetime.now() - timedelta(days=4),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() - timedelta(days=1),
+                tipo_produto="Alimentos",
+                peso=120.5,
+                km=430.8,
+                preco=850.00,
+                motivo_atraso="Congestionamento na rodovia"
+            ),
+            Entrega(
+                codigo_rastreio="ASDFGHJKL",
+                remetente="Tech Solutions SP",
+                destinatario="Hospital Esperança",
+                origem="São Paulo",
+                destino="Recife",
+                status="Em trânsito",
+                data_criacao=datetime.now() - timedelta(days=10),
+                data_atualizacao=datetime.now() - timedelta(days=2),
+                data_prevista_entrega=datetime.now() + timedelta(days=5),
+                tipo_produto="Equipamentos médicos",
+                peso=230.0,
+                km=2680.5,
+                preco=3200.00
+            )
+        ]
+           
+        # Adicionar entregas ao banco de dados
+        for entrega in entregas:
+            db.session.add(entrega)
+               
+            # Adicionar histórico de status para cada entrega
+            historico = [
+                AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Pendente",
+                    timestamp=entrega.data_criacao,
+                    observacao="Entrega registrada no sistema"
+                )
+            ]
+               
+            # Adicionar status adicionais dependendo do status atual
+            if entrega.status != "Pendente":
+                historico.append(
+                    AtualizacaoStatus(
+                        entrega_id=entrega.id,
+                        status="Em processamento",
+                        timestamp=entrega.data_criacao + timedelta(hours=2),
+                        observacao="Entrega em processamento"
+                    )
+                )
+                   
+            if entrega.status in ["Em trânsito", "Atrasado", "Entregue", "Devolvido", "Aguardando retirada"]:
+                historico.append(
+                    AtualizacaoStatus(
+                        entrega_id=entrega.id,
+                        status="Em trânsito",
+                        timestamp=entrega.data_criacao + timedelta(hours=5),
+                        observacao="Entrega saiu para distribuição"
+                    )
+                )
+                   
+            if entrega.status == "Atrasado":
+                historico.append(
+                    AtualizacaoStatus(
+                        entrega_id=entrega.id,
+                        status="Atrasado",
+                        timestamp=entrega.data_prevista_entrega + timedelta(hours=1),
+                        observacao=f"Entrega atrasada: {entrega.motivo_atraso}"
+                    )
+                )
+                   
+            if entrega.status == "Aguardando retirada":
+                historico.append(
+                    AtualizacaoStatus(
+                        entrega_id=entrega.id,
+                        status="Aguardando retirada",
+                        timestamp=entrega.data_atualizacao,
+                        observacao="Entrega disponível para retirada"
+                    )
+                )
+               
+            # Adicionar histórico ao banco de dados
+            for hist in historico:
+                db.session.add(hist)
+           
+        db.session.commit()
+        return jsonify({"message": "Dados de exemplo criados com sucesso!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
