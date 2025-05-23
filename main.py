@@ -893,6 +893,104 @@ def create_sample_data():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
+
+@app.route('/create-drivers', methods=['GET'])
+def create_drivers():
+    try:
+        # Criar motoristas
+        motoristas = [
+            {
+                "username": "motorista1",
+                "password": "senha123",
+                "nome": "João Silva",
+                "perfil": "motorista"
+            },
+            {
+                "username": "motorista2",
+                "password": "senha123",
+                "nome": "Maria Oliveira",
+                "perfil": "motorista"
+            },
+            {
+                "username": "motorista3",
+                "password": "senha123",
+                "nome": "Carlos Santos",
+                "perfil": "motorista"
+            },
+            {
+                "username": "motorista4",
+                "password": "senha123",
+                "nome": "Ana Pereira",
+                "perfil": "motorista"
+            },
+            {
+                "username": "motorista5",
+                "password": "senha123",
+                "nome": "Roberto Almeida",
+                "perfil": "motorista"
+            }
+        ]
+        
+        # Adicionar motoristas ao banco de dados
+        motoristas_criados = []
+        for m in motoristas:
+            # Verificar se o motorista já existe
+            existing = Usuario.query.filter_by(username=m["username"]).first()
+            if existing:
+                motoristas_criados.append(existing)
+                continue
+                
+            # Criar novo motorista
+            from werkzeug.security import generate_password_hash
+            novo_motorista = Usuario(
+                username=m["username"],
+                password_hash=generate_password_hash(m["password"]),
+                perfil=m["perfil"]
+            )
+            db.session.add(novo_motorista)
+            db.session.commit()
+            motoristas_criados.append(novo_motorista)
+        
+        # Associar motoristas às entregas
+        entregas = Entrega.query.all()
+        for i, entrega in enumerate(entregas):
+            # Distribuir as entregas entre os motoristas
+            motorista_index = i % len(motoristas_criados)
+            entrega.motorista_id = motoristas_criados[motorista_index].id
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Motoristas criados e associados às entregas com sucesso!",
+            "motoristas": [m.username for m in motoristas_criados],
+            "entregas_atualizadas": len(entregas)
+        }), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api-info', methods=['GET'])
+def api_info():
+    # Obter a URL base da requisição
+    base_url = request.url_root
+    
+    # Listar todos os endpoints disponíveis
+    endpoints = {
+        "entregas": f"{base_url}api/entregas",
+        "usuarios": f"{base_url}api/usuarios",
+        "relatorio_desempenho": f"{base_url}api/relatorio/desempenho",
+        "relatorio_qualidade": f"{base_url}api/relatorio/qualidade",
+        "auth_login": f"{base_url}auth/login",
+        "auth_register": f"{base_url}auth/register",
+        "auth_status": f"{base_url}auth/status"
+    }
+    
+    return jsonify({
+        "api_base_url": base_url,
+        "endpoints": endpoints,
+        "cors_enabled": True,
+        "frontend_instructions": "Use estas URLs completas no frontend para acessar a API"
+    }), 200
         
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
