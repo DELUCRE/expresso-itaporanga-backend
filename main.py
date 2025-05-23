@@ -76,7 +76,7 @@ def serve(path):
         else:
             return "index.html not found", 404
         
-@app.route('https://expresso-itaporanga-api.onrender.com/api/relatorio/desempenho', methods=['GET'])
+@app.route('/api/relatorio/desempenho', methods=['GET'])
 def relatorio_desempenho():
     try:
         # Verificar se o usuário está logado
