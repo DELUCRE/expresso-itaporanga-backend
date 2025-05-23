@@ -76,7 +76,7 @@ def serve(path):
         else:
             return "index.html not found", 404
         
-@app.route('/api/relatorio/desempenho', methods=['GET'])
+@app.route('https://expresso-itaporanga-api.onrender.com/api/relatorio/desempenho', methods=['GET'])
 def relatorio_desempenho():
     try:
         # Verificar se o usuário está logado
@@ -265,7 +265,7 @@ def relatorio_desempenho():
         app.logger.error(f"Erro ao gerar relatório de desempenho: {str(e)}")
         return jsonify({"error": f"Erro ao gerar relatório: {str(e)}"}), 500
 
-@app.route('/api/relatorio/qualidade', methods=['GET'])
+@app.route('https://expresso-itaporanga-api.onrender.com/api/relatorio/qualidade', methods=['GET'])
 def relatorio_qualidade():
     try:
         # Verificar se o usuário está logado
@@ -378,7 +378,7 @@ def relatorio_qualidade():
         app.logger.error(f"Erro ao gerar relatório de qualidade: {str(e)}")
         return jsonify({"error": f"Erro ao gerar relatório: {str(e)}"}), 500
 
-@app.route('/api/relatorio/excel', methods=['GET'])
+@app.route('https://expresso-itaporanga-api.onrender.com/api/relatorio/excel', methods=['GET'])
 def gerar_relatorio_excel():
     try:
         # Verificar se o usuário está logado
