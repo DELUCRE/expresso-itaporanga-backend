@@ -8,6 +8,11 @@ from routes.auth import auth_bp
 from routes.entregas import entregas_bp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routes import entregas
+
+app = FastAPI()
+
+app.include_router(entregas.router)
 
 app = FastAPI()
 
