@@ -467,16 +467,31 @@ def create_admin():
 @app.route('/create-sample-data', methods=['GET'])
 def create_sample_data():
     try:
-        # Verificar se já existem entregas
-        if Entrega.query.count() > 0:
-            return jsonify({"message": "Já existem entregas no banco de dados!"}), 200
-           
-        # Criar entregas de exemplo
-        entregas = [
+        # Limpar dados existentes para evitar duplicações
+        AtualizacaoStatus.query.delete()
+        Entrega.query.delete()
+        
+        # Atualizar usuário admin para ter perfil correto
+        admin = Usuario.query.filter_by(username='admin').first()
+        if admin:
+            admin.perfil = 'admin'
+        else:
+            from werkzeug.security import generate_password_hash
+            admin = Usuario(
+                username='admin',
+                password_hash=generate_password_hash('admin123'),
+                perfil='admin'
+            )
+            db.session.add(admin)
+        
+        db.session.commit()
+        
+        # Criar 10 entregas atuais (não concluídas)
+        entregas_atuais = [
             Entrega(
                 codigo_rastreio="TRACK163630",
                 remetente="Distribuidora de Livros",
-                destinatario="Livraria",
+                destinatario="Livraria Central",
                 origem="Porto Alegre, RS",
                 destino="Florianópolis, SC",
                 status="Pendente",
@@ -549,70 +564,332 @@ def create_sample_data():
                 peso=230.0,
                 km=2680.5,
                 preco=3200.00
+            ),
+            Entrega(
+                codigo_rastreio="BRT9876543",
+                remetente="Fazenda Orgânica",
+                destinatario="Supermercado Natural",
+                origem="Brasília, DF",
+                destino="Goiânia, GO",
+                status="Em processamento",
+                data_criacao=datetime.now() - timedelta(days=1),
+                data_atualizacao=datetime.now() - timedelta(hours=12),
+                data_prevista_entrega=datetime.now() + timedelta(days=2),
+                tipo_produto="Alimentos orgânicos",
+                peso=85.3,
+                km=209.0,
+                preco=420.00
+            ),
+            Entrega(
+                codigo_rastreio="QWER12345",
+                remetente="Fábrica de Móveis",
+                destinatario="Loja de Decoração",
+                origem="Belo Horizonte, MG",
+                destino="Vitória, ES",
+                status="Pendente",
+                data_criacao=datetime.now() - timedelta(hours=8),
+                data_atualizacao=datetime.now() - timedelta(hours=6),
+                data_prevista_entrega=datetime.now() + timedelta(days=4),
+                tipo_produto="Móveis",
+                peso=320.0,
+                km=524.0,
+                preco=1200.00
+            ),
+            Entrega(
+                codigo_rastreio="ZXC098765",
+                remetente="Distribuidora Têxtil",
+                destinatario="Confecção Moda Verão",
+                origem="Fortaleza, CE",
+                destino="Natal, RN",
+                status="Em trânsito",
+                data_criacao=datetime.now() - timedelta(days=3),
+                data_atualizacao=datetime.now() - timedelta(hours=18),
+                data_prevista_entrega=datetime.now() + timedelta(days=1),
+                tipo_produto="Tecidos",
+                peso=180.0,
+                km=537.0,
+                preco=780.00
+            ),
+            Entrega(
+                codigo_rastreio="MNB567890",
+                remetente="Laboratório Farmacêutico",
+                destinatario="Rede de Farmácias",
+                origem="Campinas, SP",
+                destino="Ribeirão Preto, SP",
+                status="Problema na entrega",
+                data_criacao=datetime.now() - timedelta(days=6),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() - timedelta(days=2),
+                tipo_produto="Medicamentos",
+                peso=35.0,
+                km=206.0,
+                preco=950.00,
+                motivo_atraso="Endereço incorreto"
+            ),
+            Entrega(
+                codigo_rastreio="POI123456",
+                remetente="Editora Educacional",
+                destinatario="Escola Municipal",
+                origem="São Paulo, SP",
+                destino="Campinas, SP",
+                status="Aguardando retirada",
+                data_criacao=datetime.now() - timedelta(days=5),
+                data_atualizacao=datetime.now() - timedelta(days=1),
+                data_prevista_entrega=datetime.now() - timedelta(days=1),
+                tipo_produto="Material escolar",
+                peso=150.0,
+                km=99.0,
+                preco=480.00
             )
         ]
-           
-        # Adicionar entregas ao banco de dados
-        for entrega in entregas:
+        
+        # Criar 10 entregas concluídas
+        entregas_concluidas = [
+            Entrega(
+                codigo_rastreio="ENT123456",
+                remetente="Distribuidora de Bebidas",
+                destinatario="Restaurante Gourmet",
+                origem="São Paulo, SP",
+                destino="Santos, SP",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=15),
+                data_atualizacao=datetime.now() - timedelta(days=13),
+                data_prevista_entrega=datetime.now() - timedelta(days=13),
+                tipo_produto="Bebidas",
+                peso=120.0,
+                km=79.0,
+                preco=350.00
+            ),
+            Entrega(
+                codigo_rastreio="ENT234567",
+                remetente="Fábrica de Calçados",
+                destinatario="Loja de Sapatos",
+                origem="Novo Hamburgo, RS",
+                destino="Porto Alegre, RS",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=20),
+                data_atualizacao=datetime.now() - timedelta(days=18),
+                data_prevista_entrega=datetime.now() - timedelta(days=18),
+                tipo_produto="Calçados",
+                peso=85.0,
+                km=42.0,
+                preco=280.00
+            ),
+            Entrega(
+                codigo_rastreio="DEV123456",
+                remetente="Loja Online",
+                destinatario="Cliente Final",
+                origem="Rio de Janeiro, RJ",
+                destino="Niterói, RJ",
+                status="Devolvido",
+                data_criacao=datetime.now() - timedelta(days=25),
+                data_atualizacao=datetime.now() - timedelta(days=20),
+                data_prevista_entrega=datetime.now() - timedelta(days=22),
+                tipo_produto="Eletrônicos",
+                peso=3.5,
+                km=13.0,
+                preco=120.00,
+                motivo_devolucao="Cliente recusou o recebimento"
+            ),
+            Entrega(
+                codigo_rastreio="ENT345678",
+                remetente="Indústria de Cosméticos",
+                destinatario="Salão de Beleza",
+                origem="Diadema, SP",
+                destino="São Paulo, SP",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=18),
+                data_atualizacao=datetime.now() - timedelta(days=16),
+                data_prevista_entrega=datetime.now() - timedelta(days=16),
+                tipo_produto="Cosméticos",
+                peso=25.0,
+                km=17.0,
+                preco=180.00
+            ),
+            Entrega(
+                codigo_rastreio="ENT456789",
+                remetente="Distribuidora de Alimentos",
+                destinatario="Supermercado",
+                origem="Curitiba, PR",
+                destino="Joinville, SC",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=22),
+                data_atualizacao=datetime.now() - timedelta(days=19),
+                data_prevista_entrega=datetime.now() - timedelta(days=19),
+                tipo_produto="Alimentos",
+                peso=450.0,
+                km=117.0,
+                preco=780.00
+            ),
+            Entrega(
+                codigo_rastreio="DEV234567",
+                remetente="Loja de Roupas",
+                destinatario="Cliente Residencial",
+                origem="Belo Horizonte, MG",
+                destino="Contagem, MG",
+                status="Devolvido",
+                data_criacao=datetime.now() - timedelta(days=30),
+                data_atualizacao=datetime.now() - timedelta(days=25),
+                data_prevista_entrega=datetime.now() - timedelta(days=28),
+                tipo_produto="Vestuário",
+                peso=2.0,
+                km=21.0,
+                preco=90.00,
+                motivo_devolucao="Produto com defeito"
+            ),
+            Entrega(
+                codigo_rastreio="ENT567890",
+                remetente="Fábrica de Brinquedos",
+                destinatario="Loja de Presentes",
+                origem="Recife, PE",
+                destino="Olinda, PE",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=17),
+                data_atualizacao=datetime.now() - timedelta(days=15),
+                data_prevista_entrega=datetime.now() - timedelta(days=15),
+                tipo_produto="Brinquedos",
+                peso=45.0,
+                km=11.0,
+                preco=220.00
+            ),
+            Entrega(
+                codigo_rastreio="ENT678901",
+                remetente="Distribuidora de Livros",
+                destinatario="Biblioteca Municipal",
+                origem="Brasília, DF",
+                destino="Goiânia, GO",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=28),
+                data_atualizacao=datetime.now() - timedelta(days=25),
+                data_prevista_entrega=datetime.now() - timedelta(days=25),
+                tipo_produto="Livros",
+                peso=320.0,
+                km=209.0,
+                preco=950.00
+            ),
+            Entrega(
+                codigo_rastreio="ENT789012",
+                remetente="Fábrica de Eletrônicos",
+                destinatario="Loja de Informática",
+                origem="Manaus, AM",
+                destino="Belém, PA",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=35),
+                data_atualizacao=datetime.now() - timedelta(days=30),
+                data_prevista_entrega=datetime.now() - timedelta(days=30),
+                tipo_produto="Eletrônicos",
+                peso=180.0,
+                km=1290.0,
+                preco=3800.00
+            ),
+            Entrega(
+                codigo_rastreio="DEV345678",
+                remetente="E-commerce",
+                destinatario="Cliente Final",
+                origem="Salvador, BA",
+                destino="Feira de Santana, BA",
+                status="Devolvido",
+                data_criacao=datetime.now() - timedelta(days=40),
+                data_atualizacao=datetime.now() - timedelta(days=35),
+                data_prevista_entrega=datetime.now() - timedelta(days=38),
+                tipo_produto="Smartphone",
+                peso=0.5,
+                km=108.0,
+                preco=150.00,
+                motivo_devolucao="Endereço não localizado"
+            )
+        ]
+        
+        # Adicionar todas as entregas ao banco de dados
+        todas_entregas = entregas_atuais + entregas_concluidas
+        for entrega in todas_entregas:
             db.session.add(entrega)
-               
-            # Adicionar histórico de status para cada entrega
-            historico = [
-                AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Pendente",
-                    timestamp=entrega.data_criacao,
-                    observacao="Entrega registrada no sistema"
-                )
-            ]
-               
-            # Adicionar status adicionais dependendo do status atual
-            if entrega.status != "Pendente":
-                historico.append(
-                    AtualizacaoStatus(
-                        entrega_id=entrega.id,
-                        status="Em processamento",
-                        timestamp=entrega.data_criacao + timedelta(hours=2),
-                        observacao="Entrega em processamento"
-                    )
-                )
-                   
-            if entrega.status in ["Em trânsito", "Atrasado", "Entregue", "Devolvido", "Aguardando retirada"]:
-                historico.append(
-                    AtualizacaoStatus(
-                        entrega_id=entrega.id,
-                        status="Em trânsito",
-                        timestamp=entrega.data_criacao + timedelta(hours=5),
-                        observacao="Entrega saiu para distribuição"
-                    )
-                )
-                   
-            if entrega.status == "Atrasado":
-                historico.append(
-                    AtualizacaoStatus(
-                        entrega_id=entrega.id,
-                        status="Atrasado",
-                        timestamp=entrega.data_prevista_entrega + timedelta(hours=1),
-                        observacao=f"Entrega atrasada: {entrega.motivo_atraso}"
-                    )
-                )
-                   
-            if entrega.status == "Aguardando retirada":
-                historico.append(
-                    AtualizacaoStatus(
-                        entrega_id=entrega.id,
-                        status="Aguardando retirada",
-                        timestamp=entrega.data_atualizacao,
-                        observacao="Entrega disponível para retirada"
-                    )
-                )
-               
-            # Adicionar histórico ao banco de dados
-            for hist in historico:
-                db.session.add(hist)
-           
         db.session.commit()
-        return jsonify({"message": "Dados de exemplo criados com sucesso!"}), 200
+        
+        # Adicionar histórico de status para cada entrega
+        for entrega in todas_entregas:
+            # Primeiro status: Pendente (para todas as entregas)
+            db.session.add(AtualizacaoStatus(
+                entrega_id=entrega.id,
+                status="Pendente",
+                timestamp=entrega.data_criacao,
+                observacao="Entrega registrada no sistema"
+            ))
+            
+            # Segundo status: Em processamento (para todas exceto as que ainda estão pendentes)
+            if entrega.status != "Pendente":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Em processamento",
+                    timestamp=entrega.data_criacao + timedelta(hours=2),
+                    observacao="Entrega em processamento no centro de distribuição"
+                ))
+            
+            # Terceiro status: Em trânsito (para entregas que saíram para entrega)
+            if entrega.status in ["Em trânsito", "Atrasado", "Entregue", "Devolvido", "Aguardando retirada", "Problema na entrega"]:
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Em trânsito",
+                    timestamp=entrega.data_criacao + timedelta(hours=5),
+                    observacao="Entrega saiu para distribuição"
+                ))
+            
+            # Status específicos baseados no status atual da entrega
+            if entrega.status == "Atrasado":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Atrasado",
+                    timestamp=entrega.data_prevista_entrega + timedelta(hours=1),
+                    observacao=f"Entrega atrasada: {entrega.motivo_atraso or 'Motivo não especificado'}"
+                ))
+            
+            elif entrega.status == "Aguardando retirada":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Aguardando retirada",
+                    timestamp=entrega.data_atualizacao,
+                    observacao="Entrega disponível para retirada no ponto de coleta"
+                ))
+            
+            elif entrega.status == "Problema na entrega":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Problema na entrega",
+                    timestamp=entrega.data_atualizacao,
+                    observacao=f"Problema identificado: {entrega.motivo_atraso or 'Endereço incorreto'}"
+                ))
+            
+            elif entrega.status == "Entregue":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Entregue",
+                    timestamp=entrega.data_atualizacao,
+                    observacao="Entrega realizada com sucesso"
+                ))
+            
+            elif entrega.status == "Devolvido":
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Em trânsito para devolução",
+                    timestamp=entrega.data_atualizacao - timedelta(days=2),
+                    observacao=f"Iniciando processo de devolução: {entrega.motivo_devolucao or 'Motivo não especificado'}"
+                ))
+                
+                db.session.add(AtualizacaoStatus(
+                    entrega_id=entrega.id,
+                    status="Devolvido",
+                    timestamp=entrega.data_atualizacao,
+                    observacao=f"Entrega devolvida ao remetente: {entrega.motivo_devolucao or 'Motivo não especificado'}"
+                ))
+        
+        db.session.commit()
+        
+        return jsonify({
+            "message": "Dados de exemplo criados com sucesso!",
+            "entregas_atuais": len(entregas_atuais),
+            "entregas_concluidas": len(entregas_concluidas),
+            "total_entregas": len(todas_entregas)
+        }), 200
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
