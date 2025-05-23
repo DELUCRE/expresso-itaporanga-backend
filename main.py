@@ -9,6 +9,11 @@ from routes.entregas import entregas_bp
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import entregas
+from flask import jsonify
+
+@app.route('/api/auth/status')
+def auth_status():
+    return jsonify({"status": "ok"})
 
 app = FastAPI()
 
