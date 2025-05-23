@@ -1013,6 +1013,16 @@ def api_info():
         "cors_enabled": True,
         "frontend_instructions": "Use estas URLs completas no frontend para acessar a API"
     }), 200
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["https://expresso-itaporanga-frontend.vercel.app"],  # Substitua pelo domínio real do seu frontend
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
         
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
