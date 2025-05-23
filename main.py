@@ -6,6 +6,23 @@ from models.models import db, Entrega, AtualizacaoStatus, Usuario
 from routes.user import user_bp
 from routes.auth import auth_bp
 from routes.entregas import entregas_bp
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+origins = [
+    "https://expresso-itaporanga-frontend.vercel.app",  # Substitua pelo domínio real do seu frontend
+    "https://*.vercel.app"  # Permite pré-visualizações da Vercel
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static')) 
 CORS (app, resource={r"/*":{"origins":"*"}}, supports_credentials=True)
