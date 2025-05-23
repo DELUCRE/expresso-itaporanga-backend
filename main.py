@@ -446,17 +446,21 @@ def create_admin():
         # Verificar se o usuário já existe
         existing_user = Usuario.query.filter_by(username='admin').first()
         if existing_user:
-            return jsonify({"message": "Usuário admin já existe!"}), 200
+            # Atualizar o perfil se o usuário já existe
+            existing_user.perfil = 'admin'
+            db.session.commit()
+            return jsonify({"message": "Usuário admin atualizado com perfil 'admin'!"}), 200
            
         # Criar usuário admin
         from werkzeug.security import generate_password_hash
         admin = Usuario(
             username='admin',
-            password_hash=generate_password_hash('senha123')
+            password_hash=generate_password_hash('admin123'),
+            perfil='admin'  # Adicionar perfil admin
         )
         db.session.add(admin)
         db.session.commit()
-        return jsonify({"message": "Usuário admin criado com sucesso! Username: admin, Senha: senha123"}), 200
+        return jsonify({"message": "Usuário admin criado com sucesso! Username: admin, Senha: admin123, Perfil: admin"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
