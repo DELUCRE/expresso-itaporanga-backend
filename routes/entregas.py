@@ -4,6 +4,23 @@ from datetime import datetime
 from sqlalchemy import desc
 from fastapi import APIRouter
 from models.entrega import Entrega  # Certifique-se de que o modelo Entrega está definido corretamente
+from extensions import db
+
+class Entrega(db.Model):
+    _tablename_ = 'entregas'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    funcionario_id = db.Column(db.Integer, nullable=False)
+    data_entrega = db.Column(db.Date, nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "funcionario_id": self.funcionario_id,
+            "data_entrega": self.data_entrega.isoformat(),
+            "status": self.status
+        }
 
 router = APIRouter()
 
