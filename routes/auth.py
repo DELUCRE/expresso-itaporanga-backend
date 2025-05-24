@@ -8,11 +8,6 @@ from models.models import Usuario
 # Definir o blueprint
 auth_bp = Blueprint('auth', _name_)
 
-# Agora as rotas podem usar @auth_bp.route
-@auth_bp.route('/register', methods=['POST'])
-def register():
-    # Resto do código...
-
 @auth_bp.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
