@@ -29,9 +29,11 @@ def register():
     
     return jsonify({'message': 'Usuário registrado com sucesso'}), 201
 
-@auth_bp.route('/login', methods=['POST'])
+@auth_bp.route('/auth/login', methods=['POST'])
 def login():
+    print("Recebendo requisição de login")
     data = request.get_json()
+    print(f"Dados recebidos: {data}")
     
     # Verificar se todos os campos necessários estão presentes
     if not all(k in data for k in ('username', 'password')):
