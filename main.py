@@ -960,7 +960,7 @@ def api_info():
         "frontend_instructions": "Use estas URLs completas no frontend para acessar a API"
     }), 200
 
-if _name_ == '_main_':
+if __name__ == '_main_':
     with app.app_context():
         db.create_all()
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
