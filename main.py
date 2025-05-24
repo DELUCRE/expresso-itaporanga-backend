@@ -333,9 +333,24 @@ def create_sample_data():
         db.session.rollback()
         return jsonify({"error": str(e)}), 500
 
-# Criar tabelas do banco de dados
+# Criar tabelas do banco de dados em ordem específica
 with app.app_context():
-    db.create_all()
+    # Primeiro, verificar se as tabelas já existem
+    inspector = db.inspect(db.engine)
+    existing_tables = inspector.get_table_names()
+    
+    # Se as tabelas não existirem, criá-las em ordem
+    if 'usuarios' not in existing_tables:
+        # Criar tabela de usuários primeiro
+        Usuario._table_.create(db.engine)
+    
+    if 'entregas' not in existing_tables:
+        # Depois criar tabela de entregas
+        Entrega._table_.create(db.engine)
+    
+    if 'atualizacoes_status' not in existing_tables:
+        # Por último, criar tabela de atualizações de status
+        AtualizacaoStatus._table_.create(db.engine)
 
 # Rota para criar motoristas
 @app.route('/create-drivers', methods=['GET'])
