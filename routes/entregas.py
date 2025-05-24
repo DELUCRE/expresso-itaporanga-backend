@@ -4,7 +4,7 @@ from datetime import datetime
 from sqlalchemy import desc
 from fastapi import APIRouter
 from models.models import Entrega, AtualizacaoStatus, Usuario, db  # Certifique-se de que o modelo Entrega está definido corretamente
-from extensions import db
+from extension import db
 
 class Entrega(db.Model):
     _tablename_ = 'entregas'
