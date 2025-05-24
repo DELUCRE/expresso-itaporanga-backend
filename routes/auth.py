@@ -1,6 +1,17 @@
 from flask import Blueprint, request, jsonify, session
 from models.models import db, Usuario
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask import Blueprint, request, jsonify
+from werkzeug.security import check_password_hash
+from models.models import Usuario
+
+# Definir o blueprint
+auth_bp = Blueprint('auth', _name_)
+
+# Agora as rotas podem usar @auth_bp.route
+@auth_bp.route('/register', methods=['POST'])
+def register():
+    # Resto do código...
 
 @auth_bp.route("/register", methods=["POST"])
 def register():
