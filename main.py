@@ -10,6 +10,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routes import entregas
 from flask import jsonify
+from flask import Blueprint, jsonify
+from routes.auth import auth_bp
+app.register_blueprint(auth_bp)
+
+auth_bp = Blueprint('auth', _name_)
+
+@auth_bp.route('/api/auth/status')
+def auth_status():
+    return jsonify({"status": "ok"})
 
 @app.route('/api/auth/status')
 def auth_status():
