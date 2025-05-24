@@ -48,7 +48,7 @@ class Entrega(db.Model):
     motorista_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
     motivo_devolucao = db.Column(db.Text)
     
-    atualizacoes = db.relationship('AtualizacaoStatus', backref='entrega', lazy=True, cascade="all, delete-orphan")
+    # atualizacoes = db.relationship('AtualizacaoStatus', backref='entrega', lazy=True, cascade="all, delete-orphan")
     
     def _repr_(self):
         return f'<Entrega {self.codigo_rastreio}>'
@@ -73,13 +73,7 @@ class Entrega(db.Model):
 class AtualizacaoStatus(db.Model):
     _tablename_ = 'atualizacoes_status'
     id = db.Column(db.Integer, primary_key=True)
-    entrega_id = db.Column(db.Integer, db.ForeignKey('entregas.id'), nullable=False)
-    status = db.Column(db.String(30), nullable=False)
-    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    observacoes = db.Column(db.Text)
-    
-    def _repr_(self):
-        return f'<AtualizacaoStatus {self.id} - {self.status}>'
+    entrega_id = db.Column(db.Integer, nullable=False)  # Remover ForeignKey temporariamente
 
 # Rotas de teste
 @app.route('/test', methods=['GET'])
