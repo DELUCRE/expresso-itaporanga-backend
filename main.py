@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from models.models import db, Entrega, AtualizacaoStatus, Usuario
 
 # Criar a aplicação Flask
-app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
+app = Flask(_name_, static_folder=os.path.join(os.path.dirname(_file_), 'static'))
 CORS(app, resources={r"/": {"origins": ""}}, supports_credentials=True)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'asdf#FGSgvasgf$5$WGT')
 
