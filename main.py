@@ -15,8 +15,6 @@ from routes.auth import auth_bp
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 
-app.register_blueprint(auth_bp)
-
 auth_bp = Blueprint('auth', _name_)
 
 @auth_bp.route('/api/auth/status')
