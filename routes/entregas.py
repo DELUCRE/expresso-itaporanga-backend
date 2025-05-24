@@ -3,7 +3,7 @@ from models.models import db, Entrega, AtualizacaoStatus, Usuario
 from datetime import datetime
 
 # Definir o blueprint
-entregas_bp = Blueprint('entregas', __name__)
+entregas_bp = Blueprint('entregas', _name_)
 
 @entregas_bp.route('/entregas', methods=['GET'])
 def get_entregas():
