@@ -12,6 +12,9 @@ from routes import entregas
 from flask import jsonify
 from flask import Blueprint, jsonify
 from routes.auth import auth_bp
+
+app.register_blueprint(auth_bp, url_prefix="/auth")
+
 app.register_blueprint(auth_bp)
 
 auth_bp = Blueprint('auth', _name_)
