@@ -3,7 +3,7 @@ from werkzeug.security import generate_password_hash
 from models.models import db, Usuario
 
 # Definir o blueprint
-user_bp = Blueprint('user', _name_)
+user_bp = Blueprint('user', __name__)
 
 @user_bp.route('/usuarios', methods=['GET'])
 def get_usuarios():
