@@ -3,7 +3,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from models.models import db, Usuario
 
 # Definir o blueprint
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', _name_)
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
