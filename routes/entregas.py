@@ -3,7 +3,7 @@ from models.models import db, Entrega, AtualizacaoStatus, Usuario
 from datetime import datetime
 from sqlalchemy import desc
 from fastapi import APIRouter
-from models import Entrega  # Certifique-se de que o modelo Entrega está definido corretamente
+from models.models import Entrega, AtualizacaoStatus, Usuario, db  # Certifique-se de que o modelo Entrega está definido corretamente
 from extensions import db
 
 class Entrega(db.Model):
