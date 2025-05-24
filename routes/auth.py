@@ -1,68 +1,71 @@
-from flask import Blueprint, request, jsonify, session
-from models.models import db, Usuario
-from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Blueprint, request, jsonify
-from werkzeug.security import check_password_hash
-from models.models import Usuario, db
+from werkzeug.security import check_password_hash, generate_password_hash
+from models.models import db, Usuario
 
 # Definir o blueprint
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint('auth', _name_)
 
-@auth_bp.route("/register", methods=["POST"])
+@auth_bp.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
-    perfil = data.get("perfil", "operador") # Default to 'operador'
-
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    if Usuario.query.filter_by(username=username).first():
-        return jsonify({"error": "Username already exists"}), 409
-
-    new_user = Usuario(username=username, perfil=perfil)
-    new_user.set_password(password)
+    
+    # Verificar se todos os campos necessários estão presentes
+    if not all(k in data for k in ('username', 'password')):
+        return jsonify({'error': 'Dados incompletos'}), 400
+    
+    # Verificar se o usuário já existe
+    if Usuario.query.filter_by(username=data['username']).first():
+        return jsonify({'error': 'Nome de usuário já existe'}), 400
+    
+    # Criar novo usuário
+    new_user = Usuario(
+        username=data['username'],
+        password_hash=generate_password_hash(data['password']),
+        perfil=data.get('perfil', 'usuario')  # Perfil padrão é 'usuario'
+    )
+    
     db.session.add(new_user)
     db.session.commit()
+    
+    return jsonify({'message': 'Usuário registrado com sucesso'}), 201
 
-    return jsonify({"message": "User registered successfully", "user": new_user.to_dict()}), 201
-
-@auth_bp.route("/login", methods=["POST"])
+@auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get("username")
-    password = data.get("password")
+    
+    # Verificar se todos os campos necessários estão presentes
+    if not all(k in data for k in ('username', 'password')):
+        return jsonify({'error': 'Dados incompletos'}), 400
+    
+    # Buscar usuário
+    user = Usuario.query.filter_by(username=data['username']).first()
+    
+    # Verificar se o usuário existe e a senha está correta
+    if not user or not check_password_hash(user.password_hash, data['password']):
+        return jsonify({'error': 'Credenciais inválidas'}), 401
+    
+    # Aqui você implementaria a lógica de sessão/token
+    # Por simplicidade, apenas retornamos os dados do usuário
+    return jsonify({
+        'message': 'Login bem-sucedido',
+        'user': {
+            'id': user.id,
+            'username': user.username,
+            'perfil': user.perfil
+        }
+    }), 200
 
-    if not username or not password:
-        return jsonify({"error": "Username and password are required"}), 400
-
-    user = Usuario.query.filter_by(username=username).first()
-
-    if not user or not user.check_password(password):
-        return jsonify({"error": "Invalid username or password"}), 401
-
-    # Store user info in session
-    session["user_id"] = user.id
-    session["username"] = user.username
-    session["perfil"] = user.perfil
-
-    return jsonify({"message": "Login successful", "user": user.to_dict()}), 200
-
-@auth_bp.route("/logout", methods=["POST"])
-def logout():
-    # Clear session data
-    session.pop("user_id", None)
-    session.pop("username", None)
-    session.pop("perfil", None)
-    return jsonify({"message": "Logout successful"}), 200
-
-@auth_bp.route("/status", methods=["GET"])
+@auth_bp.route('/status', methods=['GET'])
 def status():
-    user_id = session.get("user_id")
-    if user_id:
-        user = Usuario.query.get(user_id)
-        if user:
-            return jsonify({"logged_in": True, "user": user.to_dict()}), 200
-    return jsonify({"logged_in": False}), 200
-
+    # Simulação de verificação de autenticação
+    # Em uma implementação real, você verificaria o token/sessão
+    
+    # Simulando um usuário autenticado
+    return jsonify({
+        'logged_in': True,
+        'user': {
+            'id': 1,
+            'username': 'admin',
+            'perfil': 'admin'
+        }
+    }), 200
