@@ -448,6 +448,26 @@ def api_info():
         "frontend_instructions": "Use estas URLs completas no frontend para acessar a API"
     }), 200
 
+@app.route('/create-admin', methods=['GET'])
+def create_admin():
+    try:
+        # Verificar se o usuário já existe
+        admin = Usuario.query.filter_by(username='admin').first()
+        if admin:
+            return jsonify({"message": "Usuário admin já existe!"}), 200
+           
+        # Criar usuário admin
+        admin = Usuario(
+            username='admin',
+            password_hash=generate_password_hash('admin123'),
+            perfil='admin'
+        )
+        db.session.add(admin)
+        db.session.commit()
+        return jsonify({"message": "Usuário admin criado com sucesso! Username: admin, Senha: admin123"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '_main_':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
