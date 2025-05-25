@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Inicializar aplicação
-app = Flask(_name_)
+app = Flask(__name__)
 CORS(app, origins=["https://expresso-itaporanga-frontend.vercel.app", "http://localhost:5000"], supports_credentials=True)
 
 # Configuração do banco de dados
