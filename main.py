@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 
 # Inicializar aplicação
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app, origins=["https://expresso-itaporanga-frontend.vercel.app", "http://localhost:5000"], supports_credentials=True)
 
 # Configuração do banco de dados
@@ -21,7 +21,7 @@ if app.config['SQLALCHEMY_DATABASE_URI'].startswith('postgres://'):
 # Inicializar banco de dados
 db = SQLAlchemy(app)
 
-# Modelos
+# Modelos sem relacionamentos para evitar problemas de chave estrangeira
 class Usuario(db.Model):
     _tablename_ = 'usuarios'
     id = db.Column(db.Integer, primary_key=True)
@@ -45,10 +45,8 @@ class Entrega(db.Model):
     data_atualizacao = db.Column(db.DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
     data_prevista = db.Column(db.DateTime)
     data_conclusao = db.Column(db.DateTime)
-    motorista_id = db.Column(db.Integer, db.ForeignKey('usuarios.id'))
+    motorista_id = db.Column(db.Integer)  # Sem ForeignKey
     motivo_devolucao = db.Column(db.Text)
-    
-    # atualizacoes = db.relationship('AtualizacaoStatus', backref='entrega', lazy=True, cascade="all, delete-orphan")
     
     def _repr_(self):
         return f'<Entrega {self.codigo_rastreio}>'
@@ -73,9 +71,95 @@ class Entrega(db.Model):
 class AtualizacaoStatus(db.Model):
     _tablename_ = 'atualizacoes_status'
     id = db.Column(db.Integer, primary_key=True)
-    entrega_id = db.Column(db.Integer, nullable=False)  # Remover ForeignKey temporariamente
+    entrega_id = db.Column(db.Integer, nullable=False)  # Sem ForeignKey
+    status = db.Column(db.String(30), nullable=False)
+    timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    observacoes = db.Column(db.Text)
+    
+    def _repr_(self):
+        return f'<AtualizacaoStatus {self.id} - {self.status}>'
 
-# Rotas de teste
+# Endpoint para limpar e recriar o banco de dados
+@app.route('/reset-db', methods=['GET'])
+def reset_db():
+    try:
+        # Remover todas as tabelas
+        db.drop_all()
+        
+        # Recriar todas as tabelas
+        db.create_all()
+        
+        return jsonify({"message": "Banco de dados resetado com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint para criar usuário admin
+@app.route('/create-admin', methods=['GET'])
+def create_admin():
+    try:
+        # Criar usuário admin
+        admin = Usuario(
+            username='admin',
+            password_hash=generate_password_hash('admin123'),
+            perfil='admin'
+        )
+        db.session.add(admin)
+        db.session.commit()
+        return jsonify({"message": "Usuário admin criado com sucesso! Username: admin, Senha: admin123"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint para criar dados de exemplo
+@app.route('/create-sample-data', methods=['GET'])
+def create_sample_data():
+    try:
+        # Criar entregas de exemplo
+        entregas = [
+            Entrega(
+                codigo_rastreio="TRACK001",
+                remetente="Empresa A",
+                destinatario="Cliente 1",
+                origem="São Paulo, SP",
+                destino="Rio de Janeiro, RJ",
+                status="Pendente",
+                data_criacao=datetime.now() - timedelta(days=2),
+                data_prevista=datetime.now() + timedelta(days=3)
+            ),
+            Entrega(
+                codigo_rastreio="TRACK002",
+                remetente="Empresa B",
+                destinatario="Cliente 2",
+                origem="Curitiba, PR",
+                destino="Florianópolis, SC",
+                status="Em trânsito",
+                data_criacao=datetime.now() - timedelta(days=3),
+                data_prevista=datetime.now() + timedelta(days=1)
+            ),
+            Entrega(
+                codigo_rastreio="TRACK003",
+                remetente="Empresa C",
+                destinatario="Cliente 3",
+                origem="Belo Horizonte, MG",
+                destino="Brasília, DF",
+                status="Entregue",
+                data_criacao=datetime.now() - timedelta(days=5),
+                data_prevista=datetime.now() - timedelta(days=1),
+                data_conclusao=datetime.now() - timedelta(days=1)
+            )
+        ]
+        
+        for entrega in entregas:
+            db.session.add(entrega)
+        
+        db.session.commit()
+        
+        return jsonify({"message": "Dados de exemplo criados com sucesso!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
+# Endpoint de teste
 @app.route('/test', methods=['GET'])
 def test():
     return jsonify({"message": "API está funcionando!"}), 200
@@ -87,21 +171,21 @@ def login():
         data = request.get_json()
         if not data:
             return jsonify({"error": "Dados não fornecidos"}), 400
-           
+        
         username = data.get('username')
         password = data.get('password')
-           
+        
         if not username or not password:
             return jsonify({"error": "Usuário e senha são obrigatórios"}), 400
-           
+        
         user = Usuario.query.filter_by(username=username).first()
-           
+        
         if not user:
             return jsonify({"error": "Usuário não encontrado"}), 401
-           
+        
         if not check_password_hash(user.password_hash, password):
             return jsonify({"error": "Senha incorreta"}), 401
-           
+        
         return jsonify({
             "message": "Login realizado com sucesso",
             "user": {
@@ -113,37 +197,6 @@ def login():
     except Exception as e:
         print(f"Erro no login: {str(e)}")
         return jsonify({"error": f"Erro interno: {str(e)}"}), 500
-
-@app.route('/auth/register', methods=['POST'])
-def register():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    perfil = data.get('perfil', 'usuario')
-    
-    if not username or not password:
-        return jsonify({"error": "Usuário e senha são obrigatórios"}), 400
-    
-    if Usuario.query.filter_by(username=username).first():
-        return jsonify({"error": "Usuário já existe"}), 400
-    
-    user = Usuario(
-        username=username,
-        password_hash=generate_password_hash(password),
-        perfil=perfil
-    )
-    
-    db.session.add(user)
-    db.session.commit()
-    
-    return jsonify({
-        "message": "Usuário criado com sucesso",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "perfil": user.perfil
-        }
-    }), 201
 
 @app.route('/auth/status', methods=['GET'])
 def status():
@@ -193,290 +246,6 @@ def relatorio_qualidade():
         ]
     }), 200
 
-# Rota para criar dados de exemplo
-@app.route('/create-sample-data', methods=['GET'])
-def create_sample_data():
-    try:
-        # Limpar dados existentes para evitar duplicações
-        AtualizacaoStatus.query.delete()
-        Entrega.query.delete()
-        
-        # Atualizar usuário admin para ter perfil correto
-        admin = Usuario.query.filter_by(username='admin').first()
-        if admin:
-            admin.perfil = 'admin'
-        else:
-            admin = Usuario(
-                username='admin',
-                password_hash=generate_password_hash('admin123'),
-                perfil='admin'
-            )
-            db.session.add(admin)
-        
-        db.session.commit()
-        
-        # Criar 10 entregas atuais (não concluídas)
-        entregas_atuais = [
-            Entrega(
-                codigo_rastreio="TRACK163630",
-                remetente="Distribuidora de Livros",
-                destinatario="Livraria",
-                origem="Porto Alegre, RS",
-                destino="Florianópolis, SC",
-                status="Pendente",
-                data_criacao=datetime.now() - timedelta(days=2),
-                data_prevista=datetime.now() + timedelta(days=3),
-                motorista_id=admin.id
-            ),
-            Entrega(
-                codigo_rastreio="ATR13359540",
-                remetente="Indústria Nacional",
-                destinatario="Loja de Departamentos",
-                origem="Curitiba, PR",
-                destino="Florianópolis, SC",
-                status="Atrasado",
-                data_criacao=datetime.now() - timedelta(days=5),
-                data_prevista=datetime.now() - timedelta(days=1),
-                motorista_id=admin.id
-            ),
-            # Adicione mais entregas conforme necessário
-        ]
-        
-        # Criar 10 entregas concluídas
-        entregas_concluidas = [
-            Entrega(
-                codigo_rastreio="COMP12345",
-                remetente="Fábrica de Eletrônicos",
-                destinatario="Loja de Informática",
-                origem="São Paulo, SP",
-                destino="Campinas, SP",
-                status="Entregue",
-                data_criacao=datetime.now() - timedelta(days=10),
-                data_prevista=datetime.now() - timedelta(days=7),
-                data_conclusao=datetime.now() - timedelta(days=6),
-                motorista_id=admin.id
-            ),
-            Entrega(
-                codigo_rastreio="DEV98765",
-                remetente="Loja Online",
-                destinatario="Cliente Final",
-                origem="Rio de Janeiro, RJ",
-                destino="Niterói, RJ",
-                status="Devolvido",
-                data_criacao=datetime.now() - timedelta(days=8),
-                data_prevista=datetime.now() - timedelta(days=5),
-                data_conclusao=datetime.now() - timedelta(days=4),
-                motivo_devolucao="Endereço não encontrado",
-                motorista_id=admin.id
-            ),
-            # Adicione mais entregas concluídas conforme necessário
-        ]
-        
-        todas_entregas = entregas_atuais + entregas_concluidas
-        
-        for entrega in todas_entregas:
-            db.session.add(entrega)
-        
-        db.session.commit()
-        
-        # Adicionar atualizações de status para cada entrega
-        for entrega in todas_entregas:
-            db.session.add(AtualizacaoStatus(
-                entrega_id=entrega.id,
-                status="Registrado",
-                timestamp=entrega.data_criacao,
-                observacoes="Entrega registrada no sistema"
-            ))
-            
-            if entrega.status == "Entregue":
-                db.session.add(AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Em trânsito",
-                    timestamp=entrega.data_criacao + timedelta(days=1),
-                    observacoes="Entrega saiu para entrega"
-                ))
-                
-                db.session.add(AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Entregue",
-                    timestamp=entrega.data_conclusao,
-                    observacoes="Entrega realizada com sucesso"
-                ))
-            
-            elif entrega.status == "Devolvido":
-                db.session.add(AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Em trânsito",
-                    timestamp=entrega.data_criacao + timedelta(days=1),
-                    observacoes="Entrega saiu para entrega"
-                ))
-                
-                db.session.add(AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Problema na entrega",
-                    timestamp=entrega.data_conclusao - timedelta(hours=2),
-                    observacoes=f"Problema na entrega: {entrega.motivo_devolucao or 'Motivo não especificado'}"
-                ))
-                
-                db.session.add(AtualizacaoStatus(
-                    entrega_id=entrega.id,
-                    status="Devolvido",
-                    timestamp=entrega.data_conclusao,
-                    observacoes=f"Entrega devolvida ao remetente: {entrega.motivo_devolucao or 'Motivo não especificado'}"
-                ))
-        
-        db.session.commit()
-        
-        return jsonify({
-            "message": "Dados de exemplo criados com sucesso!",
-            "entregas_atuais": len(entregas_atuais),
-            "entregas_concluidas": len(entregas_concluidas),
-            "total_entregas": len(todas_entregas)
-        }), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-# Criar tabelas do banco de dados em ordem específica
-with app.app_context():
-    # Primeiro, verificar se as tabelas já existem
-    inspector = db.inspect(db.engine)
-    existing_tables = inspector.get_table_names()
-    
-    # Se as tabelas não existirem, criá-las em ordem
-    if 'usuarios' not in existing_tables:
-        # Criar tabela de usuários primeiro
-        Usuario._table_.create(db.engine)
-    
-    if 'entregas' not in existing_tables:
-        # Depois criar tabela de entregas
-        Entrega._table_.create(db.engine)
-    
-    if 'atualizacoes_status' not in existing_tables:
-        # Por último, criar tabela de atualizações de status
-        AtualizacaoStatus._table_.create(db.engine)
-
-# Rota para criar motoristas
-@app.route('/create-drivers', methods=['GET'])
-def create_drivers():
-    try:
-        # Criar motoristas
-        motoristas = [
-            {
-                "username": "motorista1",
-                "password": "senha123",
-                "nome": "João Silva",
-                "perfil": "motorista"
-            },
-            {
-                "username": "motorista2",
-                "password": "senha123",
-                "nome": "Maria Oliveira",
-                "perfil": "motorista"
-            },
-            {
-                "username": "motorista3",
-                "password": "senha123",
-                "nome": "Carlos Santos",
-                "perfil": "motorista"
-            },
-            {
-                "username": "motorista4",
-                "password": "senha123",
-                "nome": "Ana Pereira",
-                "perfil": "motorista"
-            },
-            {
-                "username": "motorista5",
-                "password": "senha123",
-                "nome": "Pedro Souza",
-                "perfil": "motorista"
-            }
-        ]
-        
-        for motorista_data in motoristas:
-            # Verificar se o motorista já existe
-            motorista = Usuario.query.filter_by(username=motorista_data["username"]).first()
-            if not motorista:
-                motorista = Usuario(
-                    username=motorista_data["username"],
-                    password_hash=generate_password_hash(motorista_data["password"]),
-                    perfil=motorista_data["perfil"]
-                )
-                db.session.add(motorista)
-        
-        db.session.commit()
-        
-        # Atualizar entregas para associar motoristas
-        entregas = Entrega.query.all()
-        motoristas = Usuario.query.filter_by(perfil="motorista").all()
-        
-        if motoristas:
-            for i, entrega in enumerate(entregas):
-                entrega.motorista_id = motoristas[i % len(motoristas)].id
-            
-            db.session.commit()
-        
-        return jsonify({
-            "message": "Motoristas criados e associados às entregas com sucesso!",
-            "entregas_atualizadas": len(entregas),
-            "motoristas": [m.username for m in motoristas]
-        }), 200
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": str(e)}), 500
-
-# Rota para informações da API
-@app.route('/api-info', methods=['GET'])
-def api_info():
-    base_url = request.url_root
-    
-    endpoints = {
-        "auth_login": f"{base_url}auth/login",
-        "auth_register": f"{base_url}auth/register",
-        "auth_status": f"{base_url}auth/status",
-        "entregas": f"{base_url}entregas",
-        "relatorio_desempenho": f"{base_url}relatorio/desempenho",
-        "relatorio_qualidade": f"{base_url}relatorio/qualidade",
-        "usuarios": f"{base_url}usuarios"
-    }
-    
-    return jsonify({
-        "api_base_url": base_url,
-        "endpoints": endpoints,
-        "cors_enabled": True,
-        "frontend_instructions": "Use estas URLs completas no frontend para acessar a API"
-    }), 200
-
-@app.route('/create-admin', methods=['GET'])
-def create_admin():
-    try:
-        # Verificar se o usuário já existe
-        admin = Usuario.query.filter_by(username='admin').first()
-        if admin:
-            return jsonify({"message": "Usuário admin já existe!"}), 200
-           
-        # Criar usuário admin
-        admin = Usuario(
-            username='admin',
-            password_hash=generate_password_hash('admin123'),
-            perfil='admin'
-        )
-        db.session.add(admin)
-        db.session.commit()
-        return jsonify({"message": "Usuário admin criado com sucesso! Username: admin, Senha: admin123"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route('/init-db', methods=['GET'])
-def init_db():
-    try:
-        # Criar todas as tabelas
-        db.create_all()
-        return jsonify({"message": "Banco de dados inicializado com sucesso!"}), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == '_main_':
+if _name_ == '_main_':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
