@@ -468,6 +468,15 @@ def create_admin():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/init-db', methods=['GET'])
+def init_db():
+    try:
+        # Criar todas as tabelas
+        db.create_all()
+        return jsonify({"message": "Banco de dados inicializado com sucesso!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '_main_':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
