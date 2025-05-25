@@ -83,26 +83,36 @@ def test():
 # Rotas de autenticação
 @app.route('/auth/login', methods=['POST'])
 def login():
-    data = request.get_json()
-    username = data.get('username')
-    password = data.get('password')
-    
-    if not username or not password:
-        return jsonify({"error": "Usuário e senha são obrigatórios"}), 400
-    
-    user = Usuario.query.filter_by(username=username).first()
-    
-    if not user or not check_password_hash(user.password_hash, password):
-        return jsonify({"error": "Usuário ou senha inválidos"}), 401
-    
-    return jsonify({
-        "message": "Login realizado com sucesso",
-        "user": {
-            "id": user.id,
-            "username": user.username,
-            "perfil": user.perfil
-        }
-    }), 200
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Dados não fornecidos"}), 400
+           
+        username = data.get('username')
+        password = data.get('password')
+           
+        if not username or not password:
+            return jsonify({"error": "Usuário e senha são obrigatórios"}), 400
+           
+        user = Usuario.query.filter_by(username=username).first()
+           
+        if not user:
+            return jsonify({"error": "Usuário não encontrado"}), 401
+           
+        if not check_password_hash(user.password_hash, password):
+            return jsonify({"error": "Senha incorreta"}), 401
+           
+        return jsonify({
+            "message": "Login realizado com sucesso",
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "perfil": user.perfil
+            }
+        }), 200
+    except Exception as e:
+        print(f"Erro no login: {str(e)}")
+        return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 @app.route('/auth/register', methods=['POST'])
 def register():
