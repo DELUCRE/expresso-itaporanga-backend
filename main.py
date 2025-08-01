@@ -7,10 +7,10 @@ from sqlalchemy import func, case, and_, or_, text # type: ignore
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 from flask import Flask, send_from_directory, request, jsonify # type: ignore # Adicionado request e jsonify
-from src.models.models import db, Entrega, AtualizacaoStatus, Usuario # type: ignore
-from src.routes.user import user_bp # type: ignore
-from src.routes.auth import auth_bp # type: ignore
-from src.routes.entregas import entregas_bp # type: ignore
+from models.models import db, Entrega, AtualizacaoStatus, Usuario # type: ignore
+from routes.user import user_bp # type: ignore
+from routes.auth import auth_bp # type: ignore
+from routes.entregas import entregas_bp # type: ignore
 
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), 'static'))
 app.config['SECRET_KEY'] = 'asdf#FGSgvasgf$5$WGT'
