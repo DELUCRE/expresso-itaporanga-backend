@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós - Expresso Itaporanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .about-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .about-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .about-text {
+            flex: 1;
+            padding-left: 20px;
+        }
+        .about-text p {
+            text-align: justify;
+        }
+        .mission-vision-values {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px; /* Espaço entre os cards */
+        }
+        .card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-basis: calc(33.333% - 20px); /* Para 3 cards por linha, ajustando o gap */
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .card h3 {
+            color: #004080;
+            margin-top: 0;
+        }
+        .card img {
+            max-width: 80px; /* Tamanho do ícone */
+            margin-bottom: 15px;
+        }
+
+        @media(max-width: 768px){
+            .about-text {
+                padding-left: 0;
+            }
+            .card {
+                flex-basis: 100%; /* Um card por linha em telas menores */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.html">Expresso Itaporanga</a></h1>                
+                <p class="slogan">Servir com paixão, viver como exemplo</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre.html" class="current">Sobre Nós</a></li>
+                    <li><a href="servicos.html">Serviços</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                    <li><a href="/login.html">Gestão de Entregas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" id="page-content">
+        <h2 class="section-title">Nossa Empresa</h2>
+        <section class="content-section about-section">
+            <img src="img/nossa_empressa_expresso_itaporanga.png" alt="Equipe Expresso Itaporanga em ação" style="max-width: 400px; float: left; margin-right: 20px;">
+            <div class="about-text">
+                <p>A Expresso Itaporanga Logística e Transporte é uma empresa dedicada a fornecer soluções de transporte rápidas, confiáveis e personalizadas, conectando o Nordeste e São Paulo com excelência. Com sede em Itaporanga, Paraíba, e uma filial estratégica localizada em São Paulo, estamos posicionados para atender clientes em regiões do interior do nordeste, reduzindo significativamente os tempos de entrega.</p>
+                <p>Nossa força vem do servir, nossa alegria do transformar. Entendemos que cada empreendimento tem uma demanda diferente e não faria sentido algum atender a todos de maneira igual. Por isso, oferecemos um atendimento único para cada cliente, seja um pequeno comércio ou uma grande corporação.</p>
+            </div>
+        </section>
+
+        <h2 class="section-title">Missão, Visão e Valores</h2>
+        <section class="mission-vision-values">
+            <div class="card">
+                <!-- Adicionar ícone para Missão -->
+                <h3>Missão</h3>
+                <p>Nossa missão é reduzir o tempo de envios e recebimentos de mercadorias do interior nordestino para São Paulo. Sabemos o quão importante é o tempo perdido e, não importa se você tem um pequeno comércio ou uma grande corporação, oferecemos um atendimento único para cada cliente.</p>
+            </div>
+            <div class="card">
+                <!-- Adicionar ícone para Visão -->
+                <h3>Visão</h3>
+                <p>Ser a principal referência em soluções logísticas entre o Nordeste e São Paulo, reconhecida pela excelência, inovação e compromisso com a satisfação de nossos clientes e o desenvolvimento das regiões que atendemos, sempre buscando expandir nossos horizontes e otimizar nossos processos.</p>
+            </div>
+            <div class="card">
+                <!-- Adicionar ícone para Valores -->
+                <h3>Valores</h3>
+                <p><strong>Honestidade:</strong> Com nossos parceiros e clientes.<br>
+                   <strong>Foco nas Pessoas:</strong> Não enxergamos apenas clientes; enxergamos as pessoas como números.<br>
+                   <strong>Compromisso:</strong> Com a eficiência e a qualidade dos serviços prestados.<br>
+                   <strong>Transparência:</strong> Em todas as etapas do processo logístico.<br>
+                   <strong>Agilidade:</strong> Para atender às demandas com rapidez e precisão.</p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Expresso Itaporanga &copy; 2025 - Servir com paixão, viver como exemplo</p>
+        <p>Transporte e Armazenagem conectando o Nordeste a São Paulo</p>
+    </footer>
+
+</body>
+</html>

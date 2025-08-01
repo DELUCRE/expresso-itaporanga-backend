@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestão de Entregas - Expresso Itaporanga</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body { 
+            font-family: sans-serif; 
+            margin: 0; 
+            background-color: #f8f9fa; 
+        }
+        
+        /* Cabeçalho e navegação */
+        header {
+            background-color: #004080;
+            color: white;
+            padding: 10px 0;
+            border-bottom: 2px solid #FF8C00;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .header-content {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .logo-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .logo {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .slogan {
+            font-size: 0.8em;
+            font-style: italic;
+            margin-top: 5px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-info span {
+            margin-right: 10px;
+        }
+        
+        .btn-sair {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-sair:hover {
+            background-color: #c82333;
+        }
+        
+        /* Menu de navegação */
+        nav {
+            display: flex;
+            justify-content: center;
+        }
+        
+        nav ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        
+        nav li {
+            margin: 0 15px;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        nav a:hover::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #FF8C00;
+        }
+        
+        nav a.active {
+            color: #FF8C00;
+        }
+        
+        /* Conteúdo principal */
+        main {
+            padding: 20px 0;
+        }
+        
+        .section {
+            background-color: #fff;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            margin-top: 0;
+            color: #495057;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 10px;
+        }
+        
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        /* Botões */
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background-color: #004080;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #002d5c;
+        }
+        
+        .btn-orange {
+            background-color: #FF8C00;
+            color: white;
+        }
+        
+        .btn-orange:hover {
+            background-color: #cc7000;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .modal-header {
+            background-color: #004080;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+            border-bottom: none;
+            padding-bottom: 0;
+            font-size: 1.5em;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .close-btn {
+            color: white;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+        }
+        
+        .close-btn:hover, .close-btn:focus {
+            color: #FF8C00;
+            text-decoration: none;
+        }
+        
+        /* Sistema de abas */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-top-left-radius: 4px;
+            border-top-right-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: -1px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .tab.active {
+            border-color: #dee2e6 #dee2e6 #fff;
+            background-color: #fff;
+            color: #004080;
+            font-weight: 600;
+        }
+        
+        .tab:hover:not(.active) {
+            background-color: #f8f9fa;
+            border-color: #e9ecef #e9ecef #dee2e6;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Detalhes da entrega */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .details-item {
+            margin-bottom: 10px;
+        }
+        
+        .details-item strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #495057;
+        }
+        
+        /* Histórico de status */
+        .status-history {
+            margin-top: 20px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 15px;
+        }
+        
+        .status-history h3 {
+            margin-bottom: 10px;
+            color: #495057;
+            font-size: 1.2em;
+        }
+        
+        .history-list {
+            list-style: none;
+            padding: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        .history-item {
+            background-color: #fff;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 3px solid #004080;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .history-date {
+            font-weight: bold;
+            color: #004080;
+        }
+        
+        /* Formulários */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        
+        .form-control:focus {
+            border-color: #004080;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(0, 64, 128, 0.25);
+        }
+        
+        .form-actions {
+            margin-top: 20px;
+            text-align: right;
+        }
+        
+        /* Campos condicionais */
+        .conditional-field {
+            display: none;
+            margin-top: 15px;
+        }
+        
+        /* Mensagens */
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        /* Rodapé */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-size: 0.9em;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            nav li {
+                margin: 5px 0;
+            }
+            
+            .logo-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .user-info {
+                margin-top: 10px;
+            }
+            
+            .details-grid, .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo-container">
+                    <a href="/index.html" class="logo">EXPRESSO ITAPORANGA</a>
+                    <div class="user-info">
+                        <span id="username-display"></span>
+                        <button class="btn-sair" onclick="logout()">Sair</button>
+                    </div>
+                </div>
+                <div class="slogan">Servir com paixão, viver como exemplo</div>
+                <nav>
+                    <ul>
+                       <li><a href="/relatorio_eficiencia.html">RELATÓRIO DE EFICIÊNCIA</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <div id="message-area" class="message"></div>
+
+        <button id="add-delivery-btn" class="btn btn-orange" style="display: none;" onclick="window.location.href='/cadastro.html'">Adicionar Nova Entrega</button>
+
+        <div class="section">
+            <h2>Entregas Atuais</h2>
+            <table id="entregas-atuais-table">
+                <thead>
+                    <tr>
+                        <th>Cód. Rastreio</th>
+                        <th>Remetente</th>
+                        <th>Destinatário</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Status Atual</th>
+                        <th>Data Prevista</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>Entregas Concluídas</h2>
+            <table id="entregas-concluidas-table">
+                <thead>
+                    <tr>
+                        <th>Cód. Rastreio</th>
+                        <th>Remetente</th>
+                        <th>Destinatário</th>
+                        <th>Origem</th>
+                        <th>Destino</th>
+                        <th>Status Atual</th>
+                        <th>Data Conclusão</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Modal de Detalhes da Entrega com Sistema de Abas -->
+    <div id="delivery-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Detalhes da Entrega</h2>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Sistema de Abas -->
+                <div class="tabs">
+                    <div class="tab active" data-tab="detalhes">Detalhes</div>
+                    <div class="tab" data-tab="editar">Editar</div>
+                    <div class="tab" data-tab="atualizar">Atualizar Status</div>
+                </div>
+                
+                <!-- Conteúdo da Aba Detalhes -->
+                <div id="tab-detalhes" class="tab-content active">
+                    <div class="details-grid">
+                        <div class="details-column">
+                            <div class="details-item">
+                                <strong>Código de Rastreio:</strong>
+                                <span id="detalhes-codigo"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Remetente:</strong>
+                                <span id="detalhes-remetente"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Destinatário:</strong>
+                                <span id="detalhes-destinatario"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Origem:</strong>
+                                <span id="detalhes-origem"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Destino:</strong>
+                                <span id="detalhes-destino"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Status Atual:</strong>
+                                <span id="detalhes-status"></span>
+                            </div>
+                        </div>
+                        <div class="details-column">
+                            <div class="details-item">
+                                <strong>Data de Criação:</strong>
+                                <span id="detalhes-data-criacao"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Última Atualização:</strong>
+                                <span id="detalhes-data-atualizacao"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Data Prevista:</strong>
+                                <span id="detalhes-data-prevista"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Tipo de Produto:</strong>
+                                <span id="detalhes-tipo-produto"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Peso:</strong>
+                                <span id="detalhes-peso"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Distância:</strong>
+                                <span id="detalhes-km"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Preço:</strong>
+                                <span id="detalhes-preco"></span>
+                            </div>
+                            <div class="details-item">
+                                <strong>Motorista:</strong>
+                                <span id="detalhes-motorista"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-history">
+                        <h3>Histórico de Status</h3>
+                        <div class="history-list" id="history-list">
+                            <!-- O histórico será preenchido dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Conteúdo da Aba Editar -->
+                <div id="tab-editar" class="tab-content">
+                    <form id="form-editar">
+                        <div class="form-grid">
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <label for="editar-codigo">Código de Rastreio:</label>
+                                    <input type="text" id="editar-codigo" class="form-control" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-remetente">Remetente:</label>
+                                    <input type="text" id="editar-remetente" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-destinatario">Destinatário:</label>
+                                    <input type="text" id="editar-destinatario" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-origem">Origem:</label>
+                                    <input type="text" id="editar-origem" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-destino">Destino:</label>
+                                    <input type="text" id="editar-destino" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-data-prevista">Data Prevista:</label>
+                                    <input type="datetime-local" id="editar-data-prevista" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <label for="editar-tipo-produto">Tipo de Produto:</label>
+                                    <input type="text" id="editar-tipo-produto" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-peso">Peso (kg):</label>
+                                    <input type="number" id="editar-peso" class="form-control" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-km">Distância (km):</label>
+                                    <input type="number" id="editar-km" class="form-control" step="0.1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-preco">Preço (R$):</label>
+                                    <input type="number" id="editar-preco" class="form-control" step="0.01">
+                                </div>
+                                <div class="form-group">
+                                    <label for="editar-motorista">Motorista:</label>
+                                    <select id="editar-motorista" class="form-control">
+                                        <option value="">Selecione um motorista</option>
+                                        <!-- Opções serão carregadas dinamicamente -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Conteúdo da Aba Atualizar Status -->
+                <div id="tab-atualizar" class="tab-content">
+                    <form id="form-atualizar-status">
+                        <div class="form-group">
+                            <label for="atualizar-status">Status:</label>
+                            <select id="atualizar-status" class="form-control">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em trânsito">Em trânsito</option>
+                                <option value="Saiu para entrega">Saiu para entrega</option>
+                                <option value="Aguardando retirada">Aguardando retirada</option>
+                                <option value="Entregue">Entregue</option>
+                                <option value="Problema na entrega">Problema na entrega</option>
+                                <option value="Devolvido">Devolvido</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="atualizar-localizacao">Localização (opcional):</label>
+                            <input type="text" id="atualizar-localizacao" class="form-control" placeholder="Ex: São Paulo, Recife, etc.">
+                        </div>
+                        <div class="form-group">
+                            <label for="atualizar-observacoes">Observações (opcional):</label>
+                            <textarea id="atualizar-observacoes" class="form-control" rows="3" placeholder="Adicione informações relevantes sobre esta atualização"></textarea>
+                        </div>
+                        
+                        <!-- Campos condicionais -->
+                        <div id="motivo-atraso-container" class="conditional-field">
+                            <div class="form-group">
+                                <label for="motivo-atraso">Motivo do Atraso:</label>
+                                <select id="motivo-atraso" class="form-control">
+                                    <option value="">Selecione um motivo</option>
+                                    <option value="Condições climáticas">Condições climáticas</option>
+                                    <option value="Problemas no transporte">Problemas no transporte</option>
+                                    <option value="Atraso na coleta">Atraso na coleta</option>
+                                    <option value="Endereço incorreto">Endereço incorreto</option>
+                                    <option value="Destinatário ausente">Destinatário ausente</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="motivo-devolucao-container" class="conditional-field">
+                            <div class="form-group">
+                                <label for="motivo-devolucao">Motivo da Devolução:</label>
+                                <select id="motivo-devolucao" class="form-control">
+                                    <option value="">Selecione um motivo</option>
+                                    <option value="Recusado pelo destinatário">Recusado pelo destinatário</option>
+                                    <option value="Endereço não localizado">Endereço não localizado</option>
+                                    <option value="Destinatário mudou-se">Destinatário mudou-se</option>
+                                    <option value="Mercadoria danificada">Mercadoria danificada</option>
+                                    <option value="Outro">Outro</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" class="btn" onclick="closeModal()">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Atualizar Status</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Expresso Itaporanga - Servir com paixão, viver como exemplo!
+    </footer>
+
+    <!-- Scripts necessários para Bootstrap e jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        const usernameDisplay = document.getElementById("username-display");
+        const entregasAtuaisTableBody = document.querySelector("#entregas-atuais-table tbody");
+        const entregasConcluidasTableBody = document.querySelector("#entregas-concluidas-table tbody");
+        const addDeliveryBtn = document.getElementById("add-delivery-btn");
+        const modal = document.getElementById("delivery-modal");
+        const messageArea = document.getElementById("message-area");
+        const tabs = document.querySelectorAll(".tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+        const formEditar = document.getElementById("form-editar");
+        const formAtualizarStatus = document.getElementById("form-atualizar-status");
+        const atualizarStatusSelect = document.getElementById("atualizar-status");
+        const motivoAtrasoContainer = document.getElementById("motivo-atraso-container");
+        const motivoDevolucaoContainer = document.getElementById("motivo-devolucao-container");
+
+        let currentUser = null;
+        let currentEntrega = null;
+        const statusConcluido = ["Entregue", "Devolvido"];
+
+        // Função para mostrar mensagens
+        function showMessage(text, type = "success") {
+            messageArea.textContent = text;
+            messageArea.className = `message ${type}`;
+            messageArea.style.display = "block";
+            setTimeout(() => { messageArea.style.display = "none"; }, 5000);
+        }
+
+        // Inicializar o dashboard
+        async function initializeDashboard() {
+            try {
+                const statusResponse = await fetch("https://expresso-itaporanga-api.onrender.com/auth/status");
+                const statusData = await statusResponse.json();
+                if (!statusData.logged_in) {
+                    window.location.href = "/login.html";
+                    return;
+                }
+                currentUser = statusData.user;
+                usernameDisplay.textContent = `Usuário: ${currentUser.username} (${currentUser.perfil})`;
+                if (currentUser.perfil === "admin" || currentUser.perfil === "operador") {
+                    addDeliveryBtn.style.display = "block";
+                }
+                fetchEntregas();
+            } catch (error) {
+                console.error("Erro ao inicializar dashboard:", error);
+                showMessage("Erro ao carregar dados. Tente recarregar a página.", "error");
+            }
+        }
+
+        // Buscar entregas
+        async function fetchEntregas() {
+            try {
+                const response = await fetch("https://expresso-itaporanga-api.onrender.com/entregas");
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                const todasEntregas = await response.json();
+                displayEntregas(todasEntregas);
+            } catch (error) {
+                console.error("Erro ao buscar entregas:", error);
+                showMessage(`Erro ao buscar entregas: ${error.message}`, "error");
+            }
+        }
+
+        // Exibir entregas nas tabelas
+        function displayEntregas(todasEntregas) {
+            entregasAtuaisTableBody.innerHTML = ""; 
+            entregasConcluidasTableBody.innerHTML = "";
+            const entregasAtuais = todasEntregas.filter(entrega => !statusConcluido.includes(entrega.status));
+            const entregasConcluidas = todasEntregas.filter(entrega => statusConcluido.includes(entrega.status));
+
+            if (entregasAtuais.length === 0) {
+                entregasAtuaisTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhuma entrega atual encontrada.</td></tr>';
+            } else {
+                entregasAtuais.forEach(entrega => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${entrega.codigo_rastreio}</td>
+                        <td>${entrega.remetente}</td>
+                        <td>${entrega.destinatario}</td>
+                        <td>${entrega.origem}</td>
+                        <td>${entrega.destino}</td>
+                        <td>${entrega.status}</td>
+                        <td>${entrega.data_prevista_entrega ? formatarData(entrega.data_prevista_entrega) : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showDeliveryDetails('${entrega.codigo_rastreio}')">Ver Detalhes</button>
+                        </td>
+                    `;
+                    entregasAtuaisTableBody.appendChild(row);
+                });
+            }
+
+            if (entregasConcluidas.length === 0) {
+                entregasConcluidasTableBody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Nenhuma entrega concluída encontrada.</td></tr>';
+            } else {
+                entregasConcluidas.forEach(entrega => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${entrega.codigo_rastreio}</td>
+                        <td>${entrega.remetente}</td>
+                        <td>${entrega.destinatario}</td>
+                        <td>${entrega.origem}</td>
+                        <td>${entrega.destino}</td>
+                        <td>${entrega.status}</td>
+                        <td>${entrega.data_atualizacao ? formatarData(entrega.data_atualizacao) : 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-primary" onclick="showDeliveryDetails('${entrega.codigo_rastreio}')">Ver Detalhes</button>
+                        </td>
+                    `;
+                    entregasConcluidasTableBody.appendChild(row);
+                });
+            }
+        }
+
+        // Formatar data para exibição
+        function formatarData(dataString) {
+            if (!dataString) return 'N/A';
+            const data = new Date(dataString);
+            return data.toLocaleString('pt-BR');
+        }
+
+        // Formatar data para input datetime-local
+        function formatarDataInput(dataString) {
+            if (!dataString) return '';
+            const data = new Date(dataString);
+            return data.toISOString().slice(0, 16);
+        }
+
+        // Mostrar detalhes da entrega
+        async function showDeliveryDetails(codigoRastreio) {
+            try {
+                const response = await fetch(`https://expresso-itaporanga-api.onrender.com/entregas/${codigoRastreio}`);
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                const entrega = await response.json();
+                currentEntrega = entrega;
+                
+                // Preencher aba de Detalhes
+                document.getElementById("detalhes-codigo").textContent = entrega.codigo_rastreio;
+                document.getElementById("detalhes-remetente").textContent = entrega.remetente;
+                document.getElementById("detalhes-destinatario").textContent = entrega.destinatario;
+                document.getElementById("detalhes-origem").textContent = entrega.origem;
+                document.getElementById("detalhes-destino").textContent = entrega.destino;
+                document.getElementById("detalhes-status").textContent = entrega.status;
+                document.getElementById("detalhes-data-criacao").textContent = formatarData(entrega.data_criacao);
+                document.getElementById("detalhes-data-atualizacao").textContent = formatarData(entrega.data_atualizacao);
+                document.getElementById("detalhes-data-prevista").textContent = entrega.data_prevista_entrega ? formatarData(entrega.data_prevista_entrega) : 'N/A';
+                document.getElementById("detalhes-tipo-produto").textContent = entrega.tipo_produto || 'Não informado';
+                document.getElementById("detalhes-peso").textContent = entrega.peso ? `${entrega.peso} kg` : 'Não informado';
+                document.getElementById("detalhes-km").textContent = entrega.km ? `${entrega.km} km` : 'Não informado';
+                document.getElementById("detalhes-preco").textContent = entrega.preco ? `R$ ${entrega.preco.toFixed(2)}` : 'Não informado';
+                
+                // Preencher aba de Edição
+                document.getElementById("editar-codigo").value = entrega.codigo_rastreio;
+                document.getElementById("editar-remetente").value = entrega.remetente;
+                document.getElementById("editar-destinatario").value = entrega.destinatario;
+                document.getElementById("editar-origem").value = entrega.origem;
+                document.getElementById("editar-destino").value = entrega.destino;
+                document.getElementById("editar-data-prevista").value = entrega.data_prevista_entrega ? formatarDataInput(entrega.data_prevista_entrega) : '';
+                document.getElementById("editar-tipo-produto").value = entrega.tipo_produto || '';
+                document.getElementById("editar-peso").value = entrega.peso || '';
+                document.getElementById("editar-km").value = entrega.km || '';
+                document.getElementById("editar-preco").value = entrega.preco || '';
+                
+                // Preencher aba de Atualização de Status
+                document.getElementById("atualizar-status").value = entrega.status;
+                
+                // Carregar histórico de status
+                await loadStatusHistory(entrega.id);
+                
+                // Carregar lista de motoristas
+                await loadMotoristas(entrega.motorista_id);
+                
+                // Verificar campos condicionais
+                checkConditionalFields();
+                
+                // Mostrar a primeira aba e exibir o modal
+                showTab('detalhes');
+                modal.style.display = "block";
+            } catch (error) {
+                console.error("Erro ao buscar detalhes da entrega:", error);
+                showMessage(`Erro ao buscar detalhes: ${error.message}`, "error");
+            }
+        }
+
+        // Carregar histórico de status
+        async function loadStatusHistory(entregaId) {
+            try {
+                const response = await fetch(`https://expresso-itaporanga-api.onrender.com/entregas/${entregaId}/historico`);
+                
+                // Verificar se a resposta é JSON válido
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Resposta da API não é um JSON válido");
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                
+                const historico = await response.json();
+                
+                const historyList = document.getElementById("history-list");
+                historyList.innerHTML = "";
+                
+                if (historico && historico.length > 0) {
+                    historico.forEach(item => {
+                        const historyItem = document.createElement("div");
+                        historyItem.className = "history-item";
+                        
+                        let detalhes = `<span class="history-date">[${formatarData(item.timestamp)}]</span> ${item.status}`;
+                        
+                        if (item.localizacao) {
+                            detalhes += ` - Local: ${item.localizacao}`;
+                        }
+                        
+                        if (item.observacoes) {
+                            detalhes += ` <br>Obs: ${item.observacoes}`;
+                        }
+                        
+                        if (item.motivo_atraso) {
+                            detalhes += ` <br>Motivo do atraso: ${item.motivo_atraso}`;
+                        }
+                        
+                        if (item.motivo_devolucao) {
+                            detalhes += ` <br>Motivo da devolução: ${item.motivo_devolucao}`;
+                        }
+                        
+                        historyItem.innerHTML = detalhes;
+                        historyList.appendChild(historyItem);
+                    });
+                } else {
+                    historyList.innerHTML = "<div class='history-item'>Nenhum histórico de status disponível.</div>";
+                }
+            } catch (error) {
+                console.error("Erro ao carregar histórico de status:", error);
+                document.getElementById("history-list").innerHTML = `<div class='history-item'>Erro ao carregar histórico: ${error.message}</div>`;
+            }
+        }
+
+        // Carregar lista de motoristas
+        async function loadMotoristas(motoristaIdSelecionado) {
+            try {
+                const response = await fetch('https://expresso-itaporanga-api.onrender.com/usuarios?perfil=motorista');
+                
+                // Verificar se a resposta é JSON válido
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Resposta da API não é um JSON válido");
+                }
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                
+                const motoristas = await response.json();
+                
+                const motoristasSelect = document.getElementById("editar-motorista");
+                motoristasSelect.innerHTML = '<option value="">Selecione um motorista</option>';
+                
+                motoristas.forEach(motorista => {
+                    const option = document.createElement("option");
+                    option.value = motorista.id;
+                    option.textContent = motorista.username || `Motorista ID: ${motorista.id}`;
+                    if (motorista.id === motoristaIdSelecionado) {
+                        option.selected = true;
+                    }
+                    motoristasSelect.appendChild(option);
+                });
+                
+                // Atualizar o nome do motorista na aba de detalhes
+                if (motoristaIdSelecionado) {
+                    const motoristaEncontrado = motoristas.find(m => m.id === motoristaIdSelecionado);
+                    if (motoristaEncontrado) {
+                        document.getElementById("detalhes-motorista").textContent = motoristaEncontrado.username || `Motorista ID: ${motoristaEncontrado.id}`;
+                    }
+                }
+            } catch (error) {
+                console.error("Erro ao carregar motoristas:", error);
+                document.getElementById("editar-motorista").innerHTML = '<option value="">Erro ao carregar motoristas</option>';
+                document.getElementById("detalhes-motorista").textContent = 'Erro ao carregar motorista';
+            }
+        }
+
+        // Verificar campos condicionais com base no status
+        function checkConditionalFields() {
+            const status = document.getElementById("atualizar-status").value;
+            
+            // Ocultar todos os campos condicionais
+            document.getElementById("motivo-atraso-container").style.display = "none";
+            document.getElementById("motivo-devolucao-container").style.display = "none";
+            
+            // Mostrar campo específico com base no status
+            if (status === "Problema na entrega") {
+                document.getElementById("motivo-atraso-container").style.display = "block";
+            } else if (status === "Devolvido") {
+                document.getElementById("motivo-devolucao-container").style.display = "block";
+            }
+        }
+
+        // Mostrar aba específica
+        function showTab(tabId) {
+            // Desativar todas as abas
+            tabs.forEach(tab => tab.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+            
+            // Ativar a aba selecionada
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+        }
+
+        // Fechar modal
+        function closeModal() {
+            modal.style.display = "none";
+        }
+
+        // Eventos de navegação entre abas
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                showTab(tab.getAttribute('data-tab'));
+            });
+        });
+
+        // Evento de mudança no select de status
+        atualizarStatusSelect.addEventListener('change', checkConditionalFields);
+
+        // Evento de submissão do formulário de edição
+        formEditar.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const dadosAtualizados = {
+                remetente: document.getElementById("editar-remetente").value,
+                destinatario: document.getElementById("editar-destinatario").value,
+                origem: document.getElementById("editar-origem").value,
+                destino: document.getElementById("editar-destino").value,
+                data_prevista_entrega: document.getElementById("editar-data-prevista").value,
+                tipo_produto: document.getElementById("editar-tipo-produto").value,
+                peso: document.getElementById("editar-peso").value,
+                km: document.getElementById("editar-km").value,
+                preco: document.getElementById("editar-preco").value,
+                motorista_id: document.getElementById("editar-motorista").value
+            };
+            
+            try {
+                const response = await fetch(`https://expresso-itaporanga-api.onrender.com/entregas/${currentEntrega.codigo_rastreio}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dadosAtualizados)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                
+                showMessage("Entrega atualizada com sucesso!", "success");
+                closeModal();
+                fetchEntregas();
+            } catch (error) {
+                console.error("Erro ao atualizar entrega:", error);
+                showMessage(`Erro ao atualizar entrega: ${error.message}`, "error");
+            }
+        });
+
+        // Evento de submissão do formulário de atualização de status
+        formAtualizarStatus.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const novoStatus = document.getElementById("atualizar-status").value;
+            const localizacao = document.getElementById("atualizar-localizacao").value;
+            const observacoes = document.getElementById("atualizar-observacoes").value;
+            
+            const dadosAtualizacao = {
+                status: novoStatus,
+                localizacao: localizacao,
+                observacoes: observacoes
+            };
+            
+            // Adicionar motivos específicos se aplicável
+            if (novoStatus === "Problema na entrega") {
+                dadosAtualizacao.motivo_atraso = document.getElementById("motivo-atraso").value;
+            } else if (novoStatus === "Devolvido") {
+                dadosAtualizacao.motivo_devolucao = document.getElementById("motivo-devolucao").value;
+            }
+            
+            try {
+                const response = await fetch(`https://expresso-itaporanga-api.onrender.com/entregas/${currentEntrega.codigo_rastreio}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(dadosAtualizacao)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Erro ${response.status}`);
+                }
+                
+                showMessage("Status atualizado com sucesso!", "success");
+                closeModal();
+                fetchEntregas();
+            } catch (error) {
+                console.error("Erro ao atualizar status:", error);
+                showMessage(`Erro ao atualizar status: ${error.message}`, "error");
+            }
+        });
+
+        // Fechar modal ao clicar fora dele
+        window.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Função de logout
+        function logout() {
+            fetch("https://expresso-itaporanga-api.onrender.com/auth/logout", { method: "POST" })
+                .then(() => {
+                    window.location.href = "/login.html";
+                })
+                .catch(error => {
+                    console.error("Erro ao fazer logout:", error);
+                    showMessage("Erro ao fazer logout. Tente novamente.", "error");
+                });
+        }
+
+        // Inicializar dashboard quando a página carregar
+        document.addEventListener("DOMContentLoaded", initializeDashboard);
+    </script>
+    <script>
+  function initializeDashboard() {
+    fetch("https://expresso-itaporanga-api.onrender.com/auth/status")
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(HTTP error! status: ${response.status});
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Status de autenticação:", data);
+        // Continue com outras chamadas ou carregamento de dados aqui...
+      })
+      .catch(error => {
+        console.error("Erro ao inicializar dashboard:", error.message);
+      });
+  }
+
+  // Inicia ao carregar a página
+  window.onload = initializeDashboard;
+
+fetch('https://expresso-itaporanga-api.onrender.com/entregas')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(Erro HTTP: ${response.status});
+    }
+    return response.json();
+  })
+  .then(data => {
+    // processa os dados normalmente
+  })
+  .catch(error => {
+    console.error("Erro ao inicializar dashboard:", error);
+  });
+        
+</script>
+</body>
+</html>

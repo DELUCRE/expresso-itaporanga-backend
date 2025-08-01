@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contato - Expresso Itaporanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .contact-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .contact-info, .contact-form-section {
+            flex: 1;
+            min-width: 300px; /* Garante que não fiquem muito espremidos */
+        }
+        .contact-info h3 {
+            color: #004080;
+            border-bottom: 1px solid #FF8C00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .contact-info p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 10px;
+        }
+        .contact-info img {
+            max-width: 250px; /* Imagem de destaque para contato */
+            border-radius: 8px;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .map-container {
+            margin-top: 20px;
+            height: 300px; /* Altura do mapa */
+            background-color: #e0e0e0; /* Placeholder para o mapa */
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #555;
+        }
+        .whatsapp-button {
+            display: inline-block;
+            background-color: #25D366; /* Cor do WhatsApp */
+            color: white;
+            padding: 12px 20px;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+        .whatsapp-button:hover {
+            background-color: #1DAE54; /* Cor mais escura no hover */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.html">Expresso Itaporanga</a></h1>
+                <p class="slogan">Servir com paixão, viver como exemplo</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre.html">Sobre Nós</a></li>
+                    <li><a href="servicos.html">Serviços</a></li>
+                    <li><a href="contato.html" class="current">Contato</a></li>
+                    <li><a href="/login.html">Gestão de Entregas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" id="page-content">
+        <h2 class="section-title">Entre em Contato</h2>
+        <section class="content-section contact-container">
+            <div class="contact-info">
+                <h3>Nossos Canais</h3>
+                <p><strong>Telefone:</strong> (00) 0000.0000</p>
+                <p><strong>E-mail:</strong> contato@expressoitaporanga.com.br</p>
+                <p><strong>Website:</strong> www.expressoitaporanga.com.br</p>
+                <p><strong>Redes Sociais:</strong> @expressoitaporanga (Instagram, Facebook, etc.)</p>
+                
+                <a href="https://wa.me/5511940361071" class="whatsapp-button" target="_blank">Fale Conosco pelo WhatsApp</a>
+                
+                <p style="margin-top: 20px;">Estamos à disposição para atender suas dúvidas, solicitações de orçamento e para apresentar a melhor solução logística para sua empresa.</p>
+                <img src="img/logo1_expresso_itaporanga_banner.png" alt="Contato Expresso Itaporanga">
+                
+            </div>
+            <div class="contact-form-section">
+                <h3>Envie uma Mensagem</h3>
+                <form id="contactForm" action="/api/contato" method="post"> 
+                    <div class="form-group">
+                        <label for="name">Nome Completo:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">E-mail:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Telefone (Opcional):</label>
+                        <input type="text" id="phone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Assunto:</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Mensagem:</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Expresso Itaporanga &copy; 2025 - Servir com paixão, viver como exemplo</p>
+        <p>Transporte e Armazenagem conectando o Nordeste a São Paulo</p>
+    </footer>
+
+<script>
+document.getElementById("contactForm").addEventListener("submit", function(e) {
+    e.preventDefault(); // Impede o envio padrão do formulário
+
+    const formData = new FormData(this);
+
+    fetch("/api/contato", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Mensagem enviada com sucesso!");
+            document.getElementById("contactForm").reset(); // Limpa o formulário
+        } else {
+            alert("Ocorreu um erro ao enviar a mensagem.");
+        }
+    })
+    .catch(error => {
+        console.error("Erro:", error);
+        alert("Não foi possível enviar a mensagem. Tente novamente mais tarde.");
+    });
+});
+</script>    
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bem-vindo - Expresso Itaporanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .hero {
+            background: url('img/logo_expresso_itaporanga_banner.png') no-repeat center center/cover;
+            color: #ffffff;
+            height: 60vh; /* Altura do banner */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .hero h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+        .hero p {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+        }
+        .btn-primary {
+            display: inline-block;
+            background: #FF8C00;
+            color: #ffffff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1.2em;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: #cc7000;
+        }
+        .features {
+            display: flex;
+            justify-content: space-around;
+            padding: 40px 0;
+            text-align: center;
+            flex-wrap: wrap;
+        }
+        .feature-item {
+            flex-basis: calc(30% - 20px);
+            margin-bottom: 20px;
+        }
+        .feature-item img {
+            max-width: 80px;
+            margin-bottom: 15px;
+        }
+        .feature-item h3 {
+            color: #004080;
+            margin-bottom: 10px;
+        }
+         @media(max-width: 768px){
+            .hero h2 {
+                font-size: 2em;
+            }
+            .hero p {
+                font-size: 1.2em;
+            }
+            .feature-item {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.html">Expresso Itaporanga</a></h1>
+                <p class="slogan">Servir com paixão, viver como exemplo</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html" class="current">Início</a></li>
+                    <li><a href="sobre.html">Sobre Nós</a></li>
+                    <li><a href="servicos.html">Serviços</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                    <li><a href="/login.html">Gestão de Entregas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h2>Conectando o Nordeste a São Paulo com Agilidade e Confiança</h2>
+        <p>Soluções completas em transporte e armazenagem para sua empresa.</p>
+        <a href="servicos.html" class="btn-primary">Conheça Nossos Serviços</a>
+    </section>
+
+    <main class="container" id="page-content">
+        <h2 class="section-title">Por que escolher a Expresso Itaporanga?</h2>
+        <section class="features">
+            <div class="feature-item">
+                <!-- Adicionar ícone para Agilidade -->
+                <h3>Agilidade Comprovada</h3>
+                <p>Reduzimos o tempo de envio em até 68%, garantindo que sua mercadoria chegue mais rápido ao destino.</p>
+            </div>
+            <div class="feature-item">
+                <!-- Adicionar ícone para Confiança -->
+                <h3>Confiança e Transparência</h3>
+                <p>Monitoramento completo da sua carga e uma equipe dedicada a oferecer o melhor atendimento.</p>
+            </div>
+            <div class="feature-item">
+                <!-- Adicionar ícone para Soluções Personalizadas -->
+                <h3>Soluções Personalizadas</h3>
+                <p>Entendemos sua necessidade e oferecemos serviços de transporte e logística sob medida para sua empresa.</p>
+            </div>
+        </section>
+
+        <section class="content-section" style="text-align:center;">
+            <h2>Pronto para otimizar sua logística?</h2>
+            <p>Entre em contato conosco hoje mesmo e descubra como podemos ajudar seu negócio a crescer.</p>
+            <a href="contato.html" class="btn-primary" style="margin-top:15px;">Fale Conosco</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>Expresso Itaporanga &copy; 2025 - Servir com paixão, viver como exemplo</p>
+        <p>Transporte e Armazenagem conectando o Nordeste a São Paulo</p>
+    </footer>
+
+</body>
+</html>

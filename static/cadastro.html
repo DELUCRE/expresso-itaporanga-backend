@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Entrega - Expresso Itaporanga</title>
+    <style>
+        footer { text-align: center; margin-top: 30px; padding: 15px; background-color: #e9ecef; color: #495057; font-size: 0.9em; }
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #004080; /* Azul Expresso Itaporanga */ padding: 10px 20px; color: white; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { margin: 0; font-size: 1.5em; }
+        .navbar a { color: #fff; text-decoration: none; margin-left: 15px; }
+        .navbar a:hover { text-decoration: underline; }
+        .navbar .user-info { font-size: 0.9em; }
+        .navbar button { background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-left: 15px; }
+        .navbar button:hover { background-color: #c82333; }
+        .container { max-width: 700px; margin: 30px auto; background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        h2 { margin-top: 0; color: #495057; border-bottom: 1px solid #dee2e6; padding-bottom: 10px; text-align: center; }
+        label { display: block; margin-bottom: 5px; color: #555; font-weight: bold; }
+        input[type="text"], input[type="number"], input[type="date"], input[type="datetime-local"], textarea, select { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 80px; }
+        button[type="submit"] { width: 100%; padding: 12px; background-color: #004080; /* Azul Expresso Itaporanga */ color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button[type="submit"]:hover { background-color: #002d5c; /* Azul mais escuro para hover */ }
+        .message { margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center; display: none; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .form-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px dashed #ccc; }
+        .form-section h3 { color: #004080; margin-top: 0; font-size: 1.1em; }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <h1><a href="/entregas.html" style="color: #fff; text-decoration: none;">Expresso Itaporanga</a></h1>
+        <div>
+            <span id="username-display" class="user-info"></span>
+            <a href="/entregas.html">Painel Principal</a>
+            <button onclick="logout()">Sair</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Cadastrar Nova Entrega</h2>
+        <form id="cadastro-form">
+            <div class="form-section">
+                <h3>Informações Básicas</h3>
+                <div>
+                    <label for="codigo_rastreio">Código de Rastreio:</label>
+                    <input type="text" id="codigo_rastreio" name="codigo_rastreio" required>
+                </div>
+                <div>
+                    <label for="remetente">Remetente:</label>
+                    <textarea id="remetente" name="remetente" required></textarea>
+                </div>
+                <div>
+                    <label for="destinatario">Destinatário:</label>
+                    <textarea id="destinatario" name="destinatario" required></textarea>
+                </div>
+                <div>
+                    <label for="origem">Origem:</label>
+                    <input type="text" id="origem" name="origem" required>
+                </div>
+                <div>
+                    <label for="destino">Destino:</label>
+                    <input type="text" id="destino" name="destino" required>
+                </div>
+                <div>
+                    <label for="data_prevista_entrega">Data Prevista de Entrega:</label>
+                    <input type="datetime-local" id="data_prevista_entrega" name="data_prevista_entrega">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Detalhes do Produto</h3>
+                <div>
+                    <label for="tipo_produto">Tipo de Produto:</label>
+                    <input type="text" id="tipo_produto" name="tipo_produto">
+                </div>
+                <div>
+                    <label for="peso">Peso (kg):</label>
+                    <input type="number" id="peso" name="peso" step="0.01" min="0">
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h3>Informações Logísticas</h3>
+                <div>
+                    <label for="km">Distância (Km):</label>
+                    <input type="number" id="km" name="km" min="0">
+                </div>
+                <div>
+                    <label for="preco">Preço (R$):</label>
+                    <input type="number" id="preco" name="preco" step="0.01" min="0">
+                </div>
+                <div>
+                    <label for="motorista_id">Motorista:</label>
+                    <select id="motorista_id" name="motorista_id">
+                        <option value="">Selecione um motorista (opcional)</option>
+                        <!-- Opções serão carregadas via JavaScript -->
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit">Cadastrar Entrega</button>
+        </form>
+        <div id="message-area" class="message"></div>
+    </div>
+
+    <script>
+        const cadastroForm = document.getElementById("cadastro-form");
+        const messageArea = document.getElementById("message-area");
+        const usernameDisplay = document.getElementById("username-display");
+        const motoristaSelect = document.getElementById("motorista_id");
+        let currentUser = null;
+
+        function showMessage(text, type = "success") {
+            messageArea.textContent = text;
+            messageArea.className = `message ${type}`;
+            messageArea.style.display = "block";
+        }
+
+        async function checkLoginStatus() {
+            try {
+                const response = await fetch("/auth/status");
+                const data = await response.json();
+                if (!data.logged_in || (data.user.perfil !== "admin" && data.user.perfil !== "operador")) {
+                    window.location.href = "/login.html";
+                    return false;
+                }
+                currentUser = data.user;
+                usernameDisplay.textContent = `Usuário: ${currentUser.username}`;
+                return true;
+            } catch (error) {
+                console.error("Erro ao verificar status de login:", error);
+                window.location.href = "/login.html";
+                return false;
+            }
+        }
+
+        async function carregarMotoristas() {
+            try {
+                const response = await fetch("/api/usuarios?perfil=motorista");
+                if (!response.ok) {
+                    throw new Error(`Erro ${response.status}`);
+                }
+                const motoristas = await response.json();
+                
+                // Limpar opções existentes
+                motoristaSelect.innerHTML = '<option value="">Selecione um motorista (opcional)</option>';
+                
+                // Adicionar motoristas ao select
+                motoristas.forEach(motorista => {
+                    const option = document.createElement("option");
+                    option.value = motorista.id;
+                    option.textContent = motorista.username;
+                    motoristaSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Erro ao carregar motoristas:", error);
+                showMessage(`Erro ao carregar lista de motoristas: ${error.message}`, "error");
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch("/auth/logout", { method: "POST" });
+                window.location.href = "/login.html";
+            } catch (error) {
+                console.error("Erro ao fazer logout:", error);
+                showMessage("Erro ao sair.", "error");
+            }
+        }
+
+        cadastroForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            messageArea.style.display = "none";
+            messageArea.className = "message";
+
+            const formData = {
+                codigo_rastreio: document.getElementById("codigo_rastreio").value,
+                remetente: document.getElementById("remetente").value,
+                destinatario: document.getElementById("destinatario").value,
+                origem: document.getElementById("origem").value,
+                destino: document.getElementById("destino").value,
+                data_prevista_entrega: document.getElementById("data_prevista_entrega").value || null,
+                tipo_produto: document.getElementById("tipo_produto").value,
+                peso: parseFloat(document.getElementById("peso").value) || null,
+                km: parseFloat(document.getElementById("km").value) || null,
+                preco: parseFloat(document.getElementById("preco").value) || null,
+                motorista_id: document.getElementById("motorista_id").value || null
+            };
+
+            try {
+                const response = await fetch("/api/entregas", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || `Erro ${response.status}`);
+                }
+
+                showMessage(`Entrega ${data.entrega.codigo_rastreio} cadastrada com sucesso!`);
+                cadastroForm.reset();
+            } catch (error) {
+                showMessage(`Erro ao cadastrar entrega: ${error.message}`, "error");
+            }
+        });
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const loggedIn = await checkLoginStatus();
+            if (loggedIn) {
+                await carregarMotoristas();
+            }
+        });
+    </script>
+    <footer>
+        <p>Expresso Itaporanga - Servir com paixão, viver como exemplo!</p>
+    </footer>
+</body>
+</html>

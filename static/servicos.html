@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nossos Serviços - Expresso Itaporanga</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .service-card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Espaço entre os cards */
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .service-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            flex-basis: calc(48% - 20px); /* Aproximadamente 2 cards por linha, ajustando o gap */
+            box-sizing: border-box;
+            text-align: left;
+        }
+        .service-card img.icon {
+            max-width: 60px; /* Tamanho do ícone */
+            float: left;
+            margin-right: 15px;
+            margin-bottom: 10px;
+        }
+        .service-card h3 {
+            color: #004080;
+            margin-top: 0;
+            border-bottom: 1px solid #FF8C00;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .service-card p {
+            text-align: justify;
+            clear: both; /* Para garantir que o texto não flutue ao lado do ícone se for muito curto */
+        }
+        .benefits-section {
+            background-color: #e9eff5; /* Um azul claro para destacar */
+            padding: 30px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .benefits-section h3 {
+            color: #004080;
+            margin-bottom: 20px;
+        }
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+        .benefits-list li {
+            color: #333;
+            font-size: 1.1em;
+            margin: 10px;
+            flex-basis: calc(30% - 20px);
+            text-align: center;
+        }
+        .benefits-list li img {
+            display: block;
+            margin: 0 auto 10px auto;
+            max-width: 50px;
+        }
+
+        @media(max-width: 768px){
+            .service-card {
+                flex-basis: 100%; /* Um card por linha em telas menores */
+            }
+            .benefits-list li {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div id="branding">
+                <h1><a href="index.html">Expresso Itaporanga</a></h1>
+                <p class="slogan">Servir com paixão, viver como exemplo</p>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre.html">Sobre Nós</a></li>
+                    <li><a href="servicos.html" class="current">Serviços</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                    <li><a href="/login.html">Gestão de Entregas</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container" id="page-content">
+        <h2 class="section-title">Nossos Serviços</h2>
+        <section class="content-section">
+            <p style="text-align: center; margin-bottom: 30px;">Pensando em uma solução eficiente para resolver o problema do "tempo", possuímos nossa matriz no interior do Nordeste. Com isso, minimizamos o tempo de envio de mercadorias em pelo menos 50%, chegando, em alguns casos, a uma redução de até 68%. Com envios semanais de veículos saindo de Itaporanga e de São Paulo, conseguimos atender em um curto espaço de tempo e sem os vários transbordos que, por vezes, danificam a mercadoria.</p>
+
+            <div class="service-card-container">
+                <div class="service-card">
+                    <!-- Adicionar ícone para Transporte de Cargas -->
+                    <h3>Transporte de Cargas Dedicadas e Fracionadas</h3>
+                    <p>Oferecemos soluções de transporte que se adaptam à sua necessidade, seja para cargas que ocupam um veículo inteiro (dedicadas) ou para volumes menores que podem ser consolidados (fracionadas). Conectamos o interior do Nordeste a São Paulo com agilidade e segurança, garantindo que sua mercadoria chegue ao destino no menor tempo possível.</p>
+                </div>
+                <div class="service-card">
+                    <!-- Adicionar ícone para Logística e Armazenagem -->
+                    <h3>Logística e Armazenagem Estratégica</h3>
+                    <p>Contamos com estrutura para armazenagem em pontos estratégicos, otimizando o fluxo de suas mercadorias. Nossa filial em São Paulo e a matriz em Itaporanga-PB permitem uma gestão logística eficiente, reduzindo custos e prazos para sua empresa.</p>
+                </div>
+                <div class="service-card">
+                    <!-- Adicionar ícone para Rastreamento e Monitoramento -->
+                    <h3>Rastreamento e Monitoramento em Tempo Real</h3>
+                    <p>A transparência é um dos nossos pilares. Oferecemos monitoramento e status de localização da carga para que você acompanhe sua entrega em todas as etapas, desde a coleta até a entrega final. (Observação: Integrar com a funcionalidade existente no painel do cliente).</p>
+                </div>
+                <div class="service-card">
+                    <!-- Adicionar ícone para Atendimento Personalizado -->
+                    <h3>Atendimento Personalizado</h3>
+                    <p>Entendemos que cada cliente é único. Por isso, contamos com uma equipe personalizada para entender e atender suas necessidades específicas, oferecendo a melhor solução logística para o seu negócio, seja ele um pequeno comércio ou uma grande corporação.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="benefits-section">
+            <h3>Nossos Diferenciais e Benefícios</h3>
+            <ul class="benefits-list">
+                <li><!-- <img src="img/icon-custo.png" alt="Custo"> --><strong>Redução de Custos:</strong> Otimização de rotas e processos.</li>
+                <li><!-- <img src="img/icon-beneficio.png" alt="Benefício"> --><strong>Agilidade na Entrega:</strong> Redução de até 68% no tempo de envio.</li>
+                <li><!-- <img src="img/icon-acessibilidade.png" alt="Acessibilidade"> --><strong>Acessibilidade:</strong> Soluções para diversos tamanhos de empresa.</li>
+                <li><!-- <img src="img/icon-transparencia.png" alt="Transparência"> --><strong>Transparência:</strong> Acompanhamento total da sua carga.</li>
+                <li><!-- <img src="img/icon-eficiencia.png" alt="Eficiência"> --><strong>Eficiência:</strong> Menos transbordos, mais segurança para sua mercadoria.</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Expresso Itaporanga &copy; 2025 - Servir com paixão, viver como exemplo</p>
+        <p>Transporte e Armazenagem conectando o Nordeste a São Paulo</p>
+    </footer>
+
+</body>
+</html>
